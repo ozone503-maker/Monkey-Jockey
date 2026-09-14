@@ -1,0 +1,15 @@
+{
+  "dogs": {
+    "meatball": "art/select/dogs/meatball.png",
+    "beaux": "art/select/dogs/beaux.png",
+    "kira": "art/select/dogs/kira.png",
+    "penny": "art/select/dogs/penny.png",
+    "mike": "art/select/dogs/mike.png",
+    "diva": "art/select/dogs/diva.png",
+    "noodle": "art/select/dogs/noodle.png",
+    "ghostbuster": "art/select/dogs/ghostbuster.png"
+  },
+  "brand": {
+    "monkeyFace": "art/brand/monkey-face.png"
+  }
+}
