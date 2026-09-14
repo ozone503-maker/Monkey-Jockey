@@ -6,15 +6,34 @@ Status: ACTIVE launch rider. Replaces Buff Bro Bot.
 
 Exact visual identity comes from Jessie's approved ShockBot artwork. If this text conflicts with an approved image, the image wins.
 
+## Default avatar rule
+
+ShockBot needs a **canonical/default Monkey Jockey avatar**, not a one-off music-video costume.
+
+- The **Save the Dogs** outfit is a song/video-specific skin and is **not** ShockBot's permanent/default game identity.
+- Default ShockBot should read immediately as ShockBot before any themed wardrobe is added.
+- Keep the metallic/silver robot identity and signature turquoise/mineral necklace visible.
+- Wardrobe should be clean, simple, confident, and neutral enough to work across the game and Brobots universe.
+- No generic sci-fi armor redesign.
+- No gold chain substitution.
+- Do not permanently lock ShockBot to any single music-video costume.
+- Future song-specific looks may be added as optional skins only.
+
 ## Locked traits
 
 - Humanoid robot; do not reuse Buff Bro Bot anatomy or proportions.
 - Metallic/silver robot identity.
 - Turquoise/mineral necklace is signature and must remain visible.
-- Current clothing direction: real fabric, purple corduroy family; adapt to a lightweight racing outfit without turning him into armor.
 - Cool, confident ShockBot silhouette; compact enough to ride the dogs in the Monkey Jockey scale system.
-- No gold chain substitution.
 - No generic sci-fi robot redesign.
+
+## SIDE production target
+
+- True side profile facing RIGHT.
+- Mounted racing crouch, compact and athletic.
+- Transparent background.
+- Preserve face/head identity from the approved reference.
+- Default/canonical wardrobe only; themed video outfits are alternate skins.
 
 ## FRONT production target
 
@@ -23,6 +42,7 @@ Exact visual identity comes from Jessie's approved ShockBot artwork. If this tex
 - Transparent background.
 - Consistent camera height with the other FRONT rider masters.
 - Preserve face/head identity from the approved reference.
+- Default/canonical wardrobe only; themed video outfits are alternate skins.
 
 ## Ownership
 
