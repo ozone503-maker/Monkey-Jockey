@@ -1,0 +1,35 @@
+MONKEY JOCKEY — PRODUCTION FRONT V33
+
+BASE
+- V32 Library folder exists but is empty.
+- Recovered persisted Production FRONT V31 and reconstructed the documented V32 delta exactly before adding V33.
+- No settled race physics, cameras, entrantId architecture, selection/results flow, or ART routing changed.
+
+CORRECTNESS / DETERMINISM
+- Preserved frozen replay weather snapshot and separate mutable weather execution state.
+- Preserved strict trackEventMult vs raceVarianceMult ownership and V27–V31 audit chain.
+- Reconstructed V32 RNG phase-count accounting.
+- NEW V33: exact per-draw RNG PHASE SEQUENCE replay.
+- Every seeded RNG draw records only its current ownership label; replay must reproduce the exact phase-label sequence, not just the same per-phase totals.
+- V33 phase sequence length must equal the V31 total draw count and must agree exactly with V32 per-phase counts.
+- No additional RNG calls are made; generated values/order and physics remain unchanged.
+
+ART
+- Preserved the four current Penny + Monkey Jockey SIDE production frames.
+- Preserved the real rider-inclusive TOP recovered from the legacy project.
+- Preserved V30/V32 fingerprint and embedded-payload contracts.
+- NEW V33: reads PNG IHDR bytes directly from the embedded data URIs and validates all five canonical images have real nonzero dimensions without external image loading.
+- TOP remains honest older-costume rider art, not mislabeled as current blue-uniform art.
+
+PUNAHELE
+- Added subtle deterministic wet-road depth bands clipped entirely to the already-established basalt road polygon.
+- No road edge, lane, rut, curb, shoulder, driveway, plant anchor, landmark, structure, or geography added.
+
+PACKAGING
+- One self-contained zero-dependency index.html.
+- Vercel/Netlify static configs and deploy README included.
+
+REMAINS / BLOCKERS
+- Current-blue-costume rider-inclusive Penny + Monkey Jockey TOP-DOWN replacement remains unavailable.
+- Approved full-body FRONT dog+rider movement sequence remains unavailable.
+- Public deployment still requires a deploy action that can explicitly target this exact generated V33 source.
