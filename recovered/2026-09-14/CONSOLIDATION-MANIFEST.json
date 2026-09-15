@@ -1,0 +1,41 @@
+{
+  "consolidated_at": "2026-09-08",
+  "production_cameras": [
+    "SIDE",
+    "FRONT"
+  ],
+  "production_base": "01-CURRENT-GAME-SOURCE/monkey-jockey/",
+  "front_camera_source": "02-CLAUDE-FRONT-CAMERA/tue-0900-monkey-jockey-front-camera/",
+  "top_down_status": "retired-production-legacy-only",
+  "source_inputs": {
+    "monkey-jockey-4-audio-intro.zip": {
+      "sha256": "238ad5199e6b357897291659bc8a4f9d07a493e1306e60bac59c0723a64c5595",
+      "bytes": 11665530
+    },
+    "tue-0900-monkey-jockey-front-camera-all.zip": {
+      "sha256": "7ec617f4b2854c163515aafb0f1d3f94a62b6aca5400ddcb9645218fb0019cd0",
+      "bytes": 5676
+    },
+    "monkey-jockey-character-pack.zip": {
+      "sha256": "4b6bbad06a79971f6f1441a67e9bd8e947fee8cef5228f3fd4909a371adc6d77",
+      "bytes": 28680072
+    },
+    "dog-monkey-jockey-dog-pack.zip": {
+      "sha256": "f57ee15bda25e0c82342b49791c93381785ad73f0130e63d304387e25f2085a0",
+      "bytes": 10403336
+    },
+    "mj-dogs-rgba-run-v6-1.zip": {
+      "sha256": "03b1bd1582e8295c7bb16e2fd3d98af67f76d496e60e4c5f28cefff70a9ce798",
+      "bytes": 13771356
+    },
+    "Volcano Jockey.mp3": {
+      "sha256": "77cf0d239fb8b31aa7fba765dde71211daa74f7f1eff53e785499d77e540247f",
+      "bytes": 2445743
+    }
+  },
+  "do_not_promote": [
+    "Run18",
+    "Run32",
+    "V22-V62 compatibility derivative lineage"
+  ]
+}
