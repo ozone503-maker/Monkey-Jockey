@@ -124,3 +124,19 @@ If any statement in this README is wrong, **correct it with repository evidence 
 ## Working rule going forward
 
 Once Grok and ChatGPT agree on the exact good runtime, tag/designate it **MONKEY-JOCKEY-CANON** (or equivalent), record its commit SHA + file hash + byte size here, and require every future candidate to pass the promotion gate before replacing it.
+
+## Rekker independent verification (2026-09-16 PT)
+
+Audited against `main` for Issue #6. Full report: `recovered/2026-09-14/REKKER-AUDIT-2026-09-16.md` (this PR).
+
+**Confirmed:**
+- Production cameras are SIDE + FRONT-FACING; TOP-DOWN retired.
+- SIDE leader framing ~75% viewport + parallax contract lives in `design/SIDE-CAMERA-SCENERY.md` (`fedb7ba`).
+- ShockBot replaces Buff Bro Bot; default identity lock is `reference/SHOCKBOT.md` (`1ce0c45`, clarified `4f8232e`).
+- V33 remains the latest *complete persisted Production FRONT package described in recovery notes*; higher Library V-names alone are not authority; do not promote V22–V62 compatibility lineage.
+
+**Corrected / sharpened:**
+- Exact V33 runtime bytes (`index.html` 19,405,362 bytes / deploy zip 14,517,254 bytes) are **still not in this GitHub repository** — only notes/QA under `recovered/2026-09-14/`.
+- No runnable candidate on GitHub currently passes the promotion gate; do **not** tag `MONKEY-JOCKEY-CANON` yet.
+- Approved Penny + Monkey Jockey SIDE race pair frames are **not** on `main` (only select portrait `art/select/dogs/penny.png`).
+- ShockBot FRONT Gate 1 turquoise preview is on PR #5 / branch `phase-b-shockbot-gate1-turquoise` (`art/shockbot_gate1_preview.png`, tip `5f61262`), not on `main`.
