@@ -1,0 +1,239 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Monkey Jockey — front camera</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:#0a1421;color:#e8f2ff;font:15px/1.5 system-ui,sans-serif;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}
+h1{font-size:16px;letter-spacing:.14em;margin:12px 14px 2px;text-transform:uppercase}
+p.sub{margin:0 14px 10px;color:#8ea6c4;font-size:13px}
+canvas{width:100%;display:block;background:#0d1a17}
+.wrap{padding:10px 12px 26px}
+.sl{display:flex;align-items:center;gap:10px;padding:7px 11px;margin:5px 0;background:#12243c;border:1px solid #24405f;border-radius:11px}
+.sl b{width:92px;font-size:13px}
+.sl i{width:52px;text-align:right;color:#8ea6c4;font-style:normal;font-size:12px}
+input[type=range]{flex:1;accent-color:#2f6ec2}
+.row{display:flex;align-items:center;gap:10px;padding:7px 11px;margin:5px 0;background:#12243c;border:1px solid #24405f;border-radius:11px}
+.row b{font-size:13.5px}
+.row small{display:block;color:#8ea6c4;font-size:12px}
+.sw{margin-left:auto;width:48px;height:28px;border-radius:14px;background:#2b3d55;position:relative;flex:0 0 auto}
+.sw::after{content:'';position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#7f92a8;transition:.15s}
+.sw.on{background:#2f6ec2}
+.sw.on::after{left:23px;background:#fff}
+.pre{display:flex;gap:8px;margin:8px 0 2px}
+.pre button{flex:1;padding:10px 4px;border-radius:11px;border:1px solid #24405f;background:#16294a;color:#e8f2ff;font:700 12px system-ui}
+.note{color:#8ea6c4;font-size:12.5px;margin:14px 14px 0;line-height:1.55}
+</style>
+</head>
+<body>
+<h1>Front camera</h1>
+<p class="sub">Real perspective now. Camera rides ahead of the leader looking back.</p>
+<canvas id="c"></canvas>
+<div class="wrap">
+  <div class="sl">
+    <b>Depth squash</b>
+    <input type="range" id="squash" min="1.0" max="12" step="0.1" value="6.0">
+    <i id="squash-val">6.0</i>
+  </div>
+  <div class="sl">
+    <b>Lead distance</b>
+    <input type="range" id="lead" min="10" max="120" step="5" value="50">
+    <i id="lead-val">50m</i>
+  </div>
+  <div class="sl">
+    <b>Camera height</b>
+    <input type="range" id="height" min="0.4" max="2.0" step="0.1" value="1.1">
+    <i id="height-val">1.1</i>
+  </div>
+  <div class="sl">
+    <b>Lane spread</b>
+    <input type="range" id="lanes" min="0.5" max="3.0" step="0.1" value="1.5">
+    <i id="lanes-val">1.5</i>
+  </div>
+  <div class="row">
+    <b>Race position</b>
+    <small>0–100m</small>
+    <input type="range" id="race" min="0" max="120" step="1" value="45" style="flex:1">
+    <i id="race-val">45m</i>
+  </div>
+  <div class="row">
+    <b>Final stretch</b>
+    <div class="sw" id="final-toggle"></div>
+  </div>
+  <div class="pre">
+    <button onclick="render()">Render</button>
+    <button onclick="downloadSettings()">Save settings</button>
+  </div>
+  <div class="note">
+    Drag the controls to tune the camera. The geometry is real perspective projection. Faces are embedded from your select-screen portraits. Delete the placeholder body blocks when you're ready for real rigged dog art.
+  </div>
+</div>
+
+<script>
+const NAMES = ['penny','beaux','ghostbuster','mike','kira','noodle','diva','meatball'];
+const TEAM = ['#2f6ec2','#60c659','#e68a1c','#ff6b6b','#9b59b6','#f39c12','#e91e63','#1abc9c'];
+const IMG = {};
+const FACES = {}; // Will be populated with base64 data URIs when you add them
+
+// Initialize images
+for(const k of NAMES) {
+  const i = new Image();
+  if(FACES[k]) i.src = FACES[k];
+  IMG[k] = i;
+}
+
+const c = document.getElementById('c');
+const g = c.getContext('2d');
+let W, H;
+
+function resize() {
+  W = c.width = c.clientWidth * devicePixelRatio;
+  H = c.height = c.clientHeight * devicePixelRatio;
+  g.scale(devicePixelRatio, devicePixelRatio);
+}
+
+function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
+
+function project(distance) {
+  const squash = parseFloat(document.getElementById('squash').value);
+  const lead = parseFloat(document.getElementById('lead').value);
+  const camHeight = parseFloat(document.getElementById('height').value);
+  const drel = distance - lead;
+  const k = 1 / (1 + Math.max(0, drel) * squash / 100);
+  const y = H * 0.5 + (distance / 100) * H * (0.5 - camHeight) * k;
+  return { k, y };
+}
+
+function render() {
+  const race = parseInt(document.getElementById('race').value);
+  const finalMode = document.getElementById('final-toggle').classList.contains('on');
+  const lead = parseFloat(document.getElementById('lead').value);
+  
+  // Simulate race dogs at different distances
+  const dogs = [];
+  for(let i = 0; i < 8; i++) {
+    const stagger = i * 12;
+    const pos = race - stagger;
+    dogs.push({ i, pos, lane: (i - 3.5) * 0.6 });
+  }
+  
+  g.fillStyle = '#0d1a17';
+  g.fillRect(0, 0, W, H);
+  
+  // Road base
+  g.fillStyle = '#1a2a3a';
+  g.fillRect(0, H * 0.45, W, H * 0.55);
+  
+  // Finish line
+  if(finalMode && race > 85) {
+    const p = project(100);
+    const fx = W/2;
+    const sq = Math.max(9, (H * 0.55) * 0.030);
+    g.save();
+    for(let y = H * 0.45; y < H; y += sq) {
+      const k = Math.floor((y - H * 0.45) / sq) % 2;
+      g.fillStyle = k ? '#f2f4f1' : '#14181a';
+      g.fillRect(fx - sq, y, sq * 2, Math.min(sq, H - y));
+    }
+    g.fillStyle = '#e8ecea';
+    g.fillRect(fx - sq * 1.5, H * 0.35, sq * 0.7, H * 0.11);
+    g.fillRect(fx + sq * 0.8, H * 0.35, sq * 0.7, H * 0.11);
+    g.fillStyle = '#c0392b';
+    g.fillRect(fx - sq * 1.9, H * 0.34, sq * 3.5, H * 0.032);
+    g.fillStyle = '#fff';
+    g.font = `800 ${Math.max(8, (H * 0.55) * 0.024)}px system-ui`;
+    g.textAlign = 'center';
+    g.fillText('FINISH', fx, H * 0.36);
+    g.restore();
+  }
+  
+  // Sort by distance for depth
+  dogs.sort((a,b) => b.pos - a.pos);
+  
+  // Draw dogs
+  dogs.forEach(o => {
+    const p = project(o.pos);
+    const s = p.k * H * 0.9;
+    if(s < 8) return;
+    
+    const x = W/2 + o.lane * s * 8;
+    const y = p.y;
+    
+    g.save();
+    if(o.pos < 0) g.globalAlpha = 0.3;
+    
+    g.fillStyle = TEAM[o.i];
+    g.globalAlpha *= 0.9;
+    g.fillRect(x - s*0.30, y - s*0.86, s*0.60, s*0.86);
+    g.globalAlpha /= 0.9;
+    
+    g.fillStyle = '#0b0e0ccc';
+    for(const lx of [-0.24, -0.08, 0.08, 0.24]) {
+      g.fillRect(x + s*lx - s*0.045, y - s*0.30, s*0.09, s*0.30);
+    }
+    
+    const im = IMG[NAMES[o.i]];
+    if(im && im.complete) {
+      const fw = s * 1.06;
+      g.drawImage(im, x - fw/2, y - s*0.80 - fw*0.86, fw, fw);
+    }
+    
+    if(s > 18) {
+      g.fillStyle = TEAM[o.i];
+      g.strokeStyle = '#0b0e0c';
+      g.lineWidth = Math.max(1, s*0.02);
+      const bw = s*0.30, bh = s*0.24;
+      g.fillRect(x - bw/2, y - s*0.62, bw, bh);
+      g.strokeRect(x - bw/2, y - s*0.62, bw, bh);
+      g.fillStyle = '#fff';
+      g.font = `900 ${Math.max(8, s*0.19)}px system-ui`;
+      g.textAlign = 'center';
+      g.textBaseline = 'middle';
+      g.fillText(String(o.i+1), x, y - s*0.62 + bh/2);
+    }
+    
+    g.restore();
+  });
+  
+  requestAnimationFrame(render);
+}
+
+// UI
+['squash','lead','height','lanes','race'].forEach(id => {
+  const el = document.getElementById(id);
+  const val = document.getElementById(id + '-val');
+  el.addEventListener('input', () => {
+    if(id === 'lead') val.textContent = el.value + 'm';
+    else val.textContent = el.value;
+  });
+});
+
+document.getElementById('final-toggle').addEventListener('click', (e) => {
+  e.target.classList.toggle('on');
+});
+
+function downloadSettings() {
+  const settings = {
+    squash: document.getElementById('squash').value,
+    lead: document.getElementById('lead').value,
+    height: document.getElementById('height').value,
+    lanes: document.getElementById('lanes').value,
+    timestamp: new Date().toISOString()
+  };
+  const blob = new Blob([JSON.stringify(settings, null, 2)], {type: 'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'camera-settings.json';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+window.addEventListener('resize', resize);
+resize();
+render();
+</script>
+</body>
+</html>
