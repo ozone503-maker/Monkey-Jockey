@@ -1,0 +1,11 @@
+{
+  "_instructions": "Each dog name maps to a base64 data URI for a PNG portrait. The HTML expects these to populate the FACES object. Extract from your select-screen portraits as 256x256 PNGs with circular alpha mask.",
+  "penny": "data:image/png;base64,",
+  "beaux": "data:image/png;base64,",
+  "ghostbuster": "data:image/png;base64,",
+  "mike": "data:image/png;base64,",
+  "kira": "data:image/png;base64,",
+  "noodle": "data:image/png;base64,",
+  "diva": "data:image/png;base64,",
+  "meatball": "data:image/png;base64,"
+}
