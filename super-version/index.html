@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#121514">
+<title>Monkey Jockey — Launch Build (Punahēle only)</title>
+<link rel="icon" href="data:,">
+<link rel="stylesheet" href="styles/main.css">
+</head>
+<body>
+<!-- sound: one visible toggle on every screen; nothing plays before the first tap -->
+<button id="muteBtn" class="mute" type="button" aria-pressed="false">🔊 SOUND ON</button>
+<audio id="aud-theme"   src="assets/audio/theme.mp3"      preload="auto" loop></audio>
+<audio id="aud-menu"    src="assets/audio/menu-loop.mp3"  preload="auto" loop></audio>
+<audio id="aud-start"   src="assets/audio/race-start.mp3" preload="auto"></audio>
+<audio id="aud-race"    src="assets/audio/race-loop.mp3"  preload="auto" loop></audio>
+<audio id="aud-victory" src="assets/audio/victory.mp3"    preload="auto"></audio>
+
+<!-- title screen -->
+<div class="intro" id="intro">
+  <video id="introVid" muted playsinline autoplay loop preload="auto"
+         src="assets/video/intro-loop.mp4"></video>
+  <div class="intro-scrim"></div>
+  <div class="intro-body">
+    <div class="intro-logo"><span>MONKEY</span><em>JOCKEY</em></div>
+    <div class="intro-tag">brought to you by the Kudoken</div>
+    <button id="enterBtn" class="primary intro-cta">ENTER</button>
+    <div class="intro-sub">Punah&#275;le Sprint &middot; 900 m</div>
+  </div>
+</div>
+
+<div class="app">
+<header>
+  <div class="logo"><span class="a">MONKEY</span><br><span class="b">JOCKEY</span></div>
+  <div class="tag">brought to you by the Kudoken · Punahēle launch build</div>
+</header>
+
+<div class="controls">
+  <div class="ctl ctl-weather">
+    <label>Weather</label>
+    <select id="weather">
+      <option value="sunny-day">Sunny Day</option>
+      <option value="rainy-day">Rainy Day</option>
+    </select>
+  </div>
+  <div class="ctl ctl-seed">
+    <label>Seed</label>
+    <input id="seed" inputmode="numeric" value="83479126">
+  </div>
+  <div class="ctl ctl-race">
+    <button id="teamBtn" class="secondary">CHANGE TEAM</button>
+    <button id="replayBtn" class="secondary" title="Same seed, same teams">RUN IT BACK</button>
+  </div>
+  <div class="ctl ctl-cam" role="group" aria-label="Camera">
+    <button id="sideBtn" class="secondary active" aria-pressed="true">SIDE</button>
+    <button id="frontBtn" class="secondary" aria-pressed="false">FRONT</button>
+  </div>
+</div>
+
+<main>
+  <!-- Track Select -->
+  <div class="track-select" id="trackSelect">
+    <div class="track-card active" data-id="punahele">
+      <h3>Punahēle Sprint</h3>
+      <div class="meta">900 m · Active</div>
+      <div class="volcano-hint">Distant volcano silhouettes in menus · road + ʻōhiʻa rainforest on course</div>
+    </div>
+    <div class="track-card locked" data-id="rainforest">
+      <div class="lock">LOCKED</div>
+      <h3>Rainforest Run</h3>
+      <div class="meta">1400 m · Unlocks January 1, 2027</div>
+      <div class="volcano-hint">Coming later · broader Big Island vistas</div>
+    </div>
+    <div class="track-card locked" data-id="kilauea">
+      <div class="lock">LOCKED</div>
+      <h3>Kīlauea Long Run</h3>
+      <div class="meta">2100 m · Unlocks February 14, 2027</div>
+      <div class="volcano-hint">Volcano energy becomes more thematic</div>
+    </div>
+  </div>
+
+  <!-- Team select: pick one dog + one rider. The rest of the field pairs
+       up deterministically from the seed. Hidden for the whole race. -->
+  <div class="team-select" id="teamSelect">
+    <div class="reel">
+      <video id="reelA" muted playsinline autoplay loop preload="auto"
+             src="assets/video/road-loop.mp4"></video>
+      <video id="reelB" muted playsinline autoplay loop preload="auto"
+             src="assets/video/ghostbuster-loop.mp4"></video>
+      <div class="reel-fade"></div>
+    </div>
+    <div class="tsec">
+      <h4>Pick your dog</h4>
+      <div class="chargrid" id="dogGrid"></div>
+    </div>
+    <div class="tsec">
+      <h4>Pick your rider</h4>
+      <div class="chargrid" id="riderGrid"></div>
+    </div>
+    <div class="tfoot">
+      <div class="yourteam" id="yourTeam">—</div>
+      <button id="goBtn" class="primary">RACE</button>
+    </div>
+  </div>
+
+  <!-- race HUD: a strip above the canvas (it used to overlay and cover the track) -->
+  <div class="hud" id="hud">
+    <div class="badge" id="status">READY · Punahēle</div>
+    <div class="badge" id="seedView">SEED 83479126</div>
+    <div class="badge" id="weatherView">SUNNY DAY</div>
+    <div class="badge" id="eventView">NO ACTIVE EVENTS</div>
+  </div>
+  <div class="stage">
+    <canvas id="race" width="1280" height="720"></canvas>
+  </div>
+
+  <div id="results" class="results"></div>
+  <div id="rankings" class="rankings"></div>
+  <div class="logbox" id="sysLog">System log appears after race…</div>
+  <p class="note">Punahēle · 900 m · deterministic. Same seed, same team, same race.</p>
+</main>
+</div>
+
+<!-- Load order matters. Classic scripts, not ES modules, so the
+     folder also opens straight from the filesystem. -->
+<script src="js/data.js"></script>
+<script src="js/art.js"></script>
+<script src="js/faces.js"></script>
+<script src="js/core.js"></script>
+<script src="js/rigs.js"></script>
+<script src="js/gait.js"></script>
+<script src="js/systems.js"></script>
+<script src="js/race.js"></script>
+<script src="js/render.js"></script>
+<script src="js/front.js"></script>
+<script src="js/audio.js"></script>
+<script src="js/ui.js"></script>
+</body>
+</html>
