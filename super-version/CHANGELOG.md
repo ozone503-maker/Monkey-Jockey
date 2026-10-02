@@ -1,3 +1,50 @@
+# BALANCE v2 (Oct 2 2026): fair, unpredictable races
+
+Jessie: *"we need the races to be fair, and not predictable. right now whoever takes the lead wins the race and so the whole race is unwatchable."* This is her sign-off to change seeded results, so **seeds no longer reproduce Sep 2 / super-v1 results** (they still reproduce themselves).
+
+## Root cause of Monkey Jockey's ~75% win rate (Sep 2 engine, unchanged through super-v1)
+There was no code that favoured Monkey Jockey by name. It came from the stat formula plus a race with almost no real randomness:
+1. **Rider multiplier, `js/race.js` line 13:** `rmod = .86 + balance*.006 + timing*.004 + nerve*.003 + luck*.002`. Balance and timing weigh most, and Monkey Jockey (9/9/8/6) has the best total: 0.986, vs Ipo 0.978, ShockBot 0.977 … Erv 0.963. That's a 0.8–2.4% top-speed edge for the whole race, worth 7–20 m at the line.
+2. **The randomness can't overcome it:** per-tick noise of ±1.5% (line 57) averages out to nothing over 2,000 ticks, and seeded surges (lines 49–52) are short and rare. So the fastest stat sheet almost always won. The same formula made Mike / Ghostbuster / Penny the best dogs and Beaux / Meatball never won (0 of 3000).
+3. **Rich-get-richer:** whoever led got a +1.5% mood speed bonus (`js/systems.js` `updateMoods`, `rank===1 … mod=1.015`), and anyone running within 11 m behind other dogs got a compounding traffic penalty (race.js line 56), unless their timing+burst was high (Monkey Jockey's timing is 9). Fast starts came from acceleration `4.5 + burst*.55 + balance*.2` (line 62), which gave high-burst dogs about 6 m at the start.
+4. **The default pick and fixed seed:** the game opens with Penny + Monkey Jockey selected (`js/ui.js` line 58), a top-3 dog with the best rider, and the seed box always stayed at 83479126 (`index.html` line 49). Pressing GO again replayed the same race, which Monkey Jockey won every time. Across random seeds the default pick won 91%.
+
+## What changed
+- `js/race.js`: stats now only *shape* how a team runs. The stat "class" edge is ±0.05% (dog) and ±0.04% (rider), and every rider stat weighs the same. Who wins comes from a **seeded race plan** per entrant, drawn from its own sub-generator `rng32(seed ^ PACE_SALT)` so the main rng sequence (weather plan, track events, surges, noise) is drawn exactly as before:
+  - **Running style:** front-runner (fast early, fades), stalker (moves mid-race) or closer (patient, strong finish). The pace tilt is 0.8–2.5% and speed-neutral over the race. Burst/timing make front-running likelier, and stamina/nerve make closing likelier. All three styles win about equally (x0.97–1.03).
+  - **1–2 mid-race moves:** a surge of +3.5–8% over 3–8% of the course, paid back right after at 42%.
+  - **Late kick:** a seeded sprint from 80–88% of the course. It's saved up, not free, because a little is held back before it.
+  - **Day form:** ±1.7%.
+  - **Drafting:** tucked in 1–12 m behind the nearest dog gets up to +0.55%. Nose-to-tail (<1 m) is boxed in, at −0.6%. Only the nearest dog counts, so a pack never compounds.
+  - **Fade:** the old energy curve sent everyone to the 0.66 floor. It's now a smooth fade to about −24% at the line, and stamina softens it slightly.
+  - **Acceleration:** about equal (8.2 ± small). The launch is mild.
+  - The race length is unchanged (winner ~65 s).
+  - `trackEventMult` (events) and `raceVarianceMult` (seeded surges/hesitations) are still separate fields with the same owners. The new plan writes `paceMult` / `draftMult`.
+- `js/systems.js` `updateMoods`: no speed bonus for leading (was +1.5%). The back-of-field and final-phase mood lifts dropped from 1.01 / 1.02 to 1.004 / 1.006. Moods, animation hooks and commentary hooks are unchanged.
+- `js/ui.js`: **a fresh seed for every new race.** It's rolled at boot, on CHANGE TEAM and after each finish, unless you typed a seed, which is then used once. RUN IT BACK still reuses the same seed + teams + weather, so the replay is identical. `crypto.getRandomValues` is used only to choose the seed in the UI. The race itself still draws only from `rng32`.
+
+## Numbers (`node tools/race_sim.js`, 3000 races, random seed + random player pick + random weather)
+| | Before (super-v1 = Sep 2 engine) | After (v2) |
+|---|---|---|
+| Monkey Jockey rider win share | 49.4% (x3.95 fair) | 13.9% (x1.11) |
+| Riders, range of fair share | x0.00 (Erv) – x3.95 | x0.88 – x1.12 |
+| Dogs, range of fair share | x0.00 (Beaux, Meatball) – x3.13 (Mike) | x0.89 – x1.17 |
+| Dog+rider combos above x1.5 | 15 / 64 (best x8) | 0 / 64 (best x1.45) |
+| Leader at 25% wins | 72.4% | 27.3% |
+| Leader at 50% wins | 69.6% | 36.7% |
+| Leader at 75% wins | 78.4% | 51.2% |
+| Lead changes per race (held ≥0.5 s, after the first 5%) | 2.95 | 4.79 (2.81 in the 2nd half) |
+| Winning margin < 0.25 s | 38.5% | 71.5% |
+| Photo finish < 0.05 s | 13.5% | 22.5% |
+| Default pick (Penny + MJ) win rate, 500 random seeds | 91.4% | 14.8% |
+| Average winning time | 65.4 s | 65.1 s |
+
+Fair share = 12.5% (1 in 8).
+
+## Tests
+- Local, Chromium 390x844: 3 real races (Mike+Erv, Noodle+MJ, Meatball+ShockBot) with 0 JS errors. There were 6–16 lead-change highlights per race and 4–5 different leaders. The podium showed. RUN IT BACK was identical (same seed, same finish times). FRONT camera toggled. Seeds were distinct per race.
+- Live (https://monkey-jockey-test.vercel.app/, deploy `dpl_47XvhKSm48Gz8GpK7qiwQPVCoub7`), phone 390x844, 2 races with 0 JS errors. Race 1: Ghostbuster + Monkey Jockey led at 512 m, and Noodle + Mystery Drone Pilot won by 0.183 s. That race had 6 different leaders and RUN IT BACK was identical. Race 2: Penny + Dinny won by 0.182 s with 5 different leaders. `/.env.local` returns 404.
+
 # SUPER VERSION (Sep 26 2026): later-version features on top of Fixes 1–7
 
 The commits are Feature A–D plus docs. Race engine (`js/race.js`, `js/systems.js`) is **unchanged**. `tools/detcheck.py` runs 36 seeded races (sunny + rainy, varied picks) on the Sep 2 base and on this build and compares every finish time, the dog, the rider slot, the log count and the highlight count. **Result: 36/36 identical.**

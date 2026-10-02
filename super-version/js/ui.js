@@ -18,6 +18,7 @@ function podiumCard(r, place){
 }
 function showResults(){
   Sound.victory();
+  rollSeed();                                   // next GO = a new race; RUN IT BACK = this one
   const F = sim.finishOrder, [a, b, c] = F;
   const margin = b ? b.finish - a.finish : 0;
   const mine = F.findIndex(r => r.entrantId === PLAYER_ID) + 1;
@@ -56,6 +57,18 @@ function dumpSystemLog(){
    seed + player pick always produces the same field. -------- */
 const PLAYER_ID = 'e1';
 let playerPick = {dogId:'penny', riderId:'monkey-jockey'};
+
+/* Fresh seed per race (balance v2). v1 kept the seed box at 83479126 forever, so pressing GO
+   again with the same team replayed the identical race. Now a new seed is rolled at boot, on
+   CHANGE TEAM and after every finish — unless you typed a seed yourself, which is then used.
+   RUN IT BACK still reuses lastSeed + teams + weather, so a replay is identical. This is UI-only:
+   the race itself still draws only from rng32(seed). */
+let seedTyped = false;
+function freshSeed(){
+  try{ return (crypto.getRandomValues(new Uint32Array(1))[0] % 2147483646) + 1; }
+  catch(e){ return (Date.now() % 2147483646) + 1; }
+}
+function rollSeed(){ if(!seedTyped) $('seed').value = freshSeed(); }
 
 function statLine(kind, x){
   return kind === 'dogs'
@@ -126,6 +139,7 @@ function showTeamSelect(){
   document.body.classList.remove('racing');
   reelStart();
   $('results').style.display='none';
+  rollSeed();
   renderTeamSelect();
   refreshPreview();
 }
@@ -174,6 +188,7 @@ function start(replay=false){
   cancelAnimationFrame(raf);
   $('results').style.display='none';
   const s=replay?lastSeed:seed($('seed').value);
+  if(!replay) seedTyped=false;                  // a typed seed is used once
   if(replay){
     // reproduce the exact race: restore the entries AND the weather it ran with
     raceEntries=lastEntries.map(e=>({...e}));
@@ -240,6 +255,8 @@ $('intro').addEventListener('click', ()=>{ if(!$('intro').dataset.done) Sound.pl
 
 /* ---------------- boot ---------------- */
 lastWeather = $('weather').value;
+$('seed').addEventListener('input', ()=>{ seedTyped = true; });
+rollSeed();
 document.body.classList.add('intro-open');
 bindTeamSelect();
 renderTeamSelect();

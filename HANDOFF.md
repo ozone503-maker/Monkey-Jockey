@@ -1,8 +1,8 @@
 # HANDOFF: Monkey Jockey "super version"
 
-Written for any AI or developer picking this up cold.
+> **On GitHub (branch `super-version`) the playable game is in `super-version/`.** The file paths below are relative to that folder. The repo-root `README.md` is the older ChatGPT master spec from `main`, left unchanged. The local working repo is `/workspace/mj-fix`, tag `super-v2`.
 
-> **On GitHub (branch `super-version`) the playable game is in `super-version/`.** The file paths below are relative to that folder. The repo-root `README.md` is the older ChatGPT master spec from `main`, left unchanged. The local working repo is `/workspace/mj-fix`, tag `super-v1`.
+Written for any AI or developer picking this up cold.
 
 ## What the game is
 **Monkey Jockey** ("brought to you by the Kudoken") is a phone-first browser game.
@@ -25,7 +25,7 @@ Written for any AI or developer picking this up cold.
 |---|---|
 | `index.html` | Title screen, team picker, HUD, canvas, results, `<audio>` tags. Script load order matters. |
 | `js/data.js` | Roster (DOGS, RIDERS with stats), tracks, weather, events, rider personalities |
-| `js/race.js`, `js/systems.js` | **The seeded race engine. Do not change them.** Any edit breaks seeded results. |
+| `js/race.js`, `js/systems.js` | **The seeded race engine** (balance v2, Oct 2 2026). Any edit changes seeded results — re-run `tools/race_sim.js` before and after and keep the targets below. |
 | `js/core.js` | Shared state and the `rng32` seeded RNG |
 | `js/render.js` | SIDE camera and standings |
 | `js/front.js` | FRONT camera |
@@ -40,7 +40,9 @@ Written for any AI or developer picking this up cold.
 | `assets/video/` | Intro loop (Sep 2) and menu reels |
 
 **Tools:**
-- `tools/detcheck.py BASE_URL NEW_URL`: seeded-results check against the Sep 2 base (commit `f7863dd`).
+- `node tools/race_sim.js [ROOT] [N] [--default-pick] [--json]`: headless balance simulator on the game's own engine files. Reports win share per dog / rider / combo, leader-at-25/50/75% win rates, lead changes, close finishes. Pass `/path/to/old/checkout` as ROOT to get "before" numbers.
+- `tools/browser_races.py URL [N] [SHOT]` (needs playwright, e.g. `/workspace/.venv-pw/bin/python`): plays real races at 390x844, checks 0 JS errors, lead changes, podium, RUN IT BACK identical, FRONT camera, fresh seed per race.
+- `tools/detcheck.py BASE_URL NEW_URL`: seeded-results comparison between two builds. Since balance v2 it will (correctly) report differences against the Sep 2 base; use it between two v2 builds.
 - `tools/key_checker.py [--strict]`: removes baked checkerboards.
 - `tools/avatars.py`, `tools/heads.py`: avatar crops.
 
@@ -62,27 +64,24 @@ Written for any AI or developer picking this up cold.
   - Mystery Drone Pilot replaces Ruch.
   - Real rider and dog avatars.
   - Victory podium with RUN IT BACK and photo-finish call.
-- **Seeded results:** identical to the Sep 2 base (36/36 races).
+- **Balance v2 (Oct 2 2026, Jessie's OK):** fair, unpredictable races. 3000-race sim: every dog and rider within x0.88–x1.17 of fair share, no combo above x1.5, early leader at 25% wins 27% (was 72%), 4.8 lead changes per race, Monkey Jockey 13.9% (was 49%). A fresh seed is rolled for every new race; RUN IT BACK replays identically. Details in CHANGELOG.md.
+- **Balance targets to keep:** no entrant above ~x1.5 fair share; leader at 25% wins < 35%, at 50% < 45%; 2+ lead changes per race.
 
 ## Left to do (priority order)
-1. **Balance:** the Monkey Jockey rider wins about 75% of races (18/24 in a seeded sweep).
-   - The engine is untouched, so this is the original tuning.
-   - Fixing it changes seeded results, so get Jessie's sign-off first.
-   - The incident report discusses ±3% vs ±15% variance; neither is canon.
-2. **Background plants and layered scenery** per `design/SIDE-CAMERA-SCENERY.md` (GitHub main):
+1. **Background plants and layered scenery** per `design/SIDE-CAMERA-SCENERY.md` (GitHub main):
    - Ferns, banana plants, basalt, markers, spectators, drawn in code.
    - Parallax factors 0.20 / 0.50 / 0.90; leader at 75%.
    - **No utility poles or driveways.** The docs conflict, so ask Jessie first.
-3. **READY-SET-GO overlay:**
+2. **READY-SET-GO overlay:**
    - `race-start.mp3` already plays for 4.138 s before race-loop.
    - Hold `sim` stepping for that time and draw READY / SET / GO on the bar lines (0.81 s, 2.47 s, 4.14 s).
-4. **Rain visuals** when the weather is rainy: streaks, wet sheen, light spray. Today it's only a badge.
-5. **Ghostbuster SIDE art:** the standing-pack sprite is corrupt, so Ghostbuster uses a drawn stand-in.
-6. **Missing assets:**
+3. **Rain visuals** when the weather is rainy: streaks, wet sheen, light spray. Today it's only a badge.
+4. **Ghostbuster SIDE art:** the standing-pack sprite is corrupt, so Ghostbuster uses a drawn stand-in.
+5. **Missing assets:**
    - The later **intro video**; only the Sep 2 `intro-loop.mp4` exists.
    - SIDE art for all riders except Monkey Jockey.
    - Full-body FRONT dog art.
-7. **The rest of `CHANGES.md`:**
+6. **The rest of `CHANGES.md`:**
    - Palette/monkey-face title (`art/brand/monkey-face.png`).
    - 3-win streak → free jar.
    - KDU / MallTickets hook-up.

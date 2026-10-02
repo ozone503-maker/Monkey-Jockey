@@ -58,9 +58,9 @@ function updateMoods(sim,dt){
     if(!pers||!mood)return;
     const rank=order.findIndex(x=>x===r)+1;
     let targetMood=pers.base, mod=1.0;
-    if(rank===1){targetMood=pers.triggers.lead||pers.base;mod=1.015}
-    else if(rank>=6){targetMood=pers.triggers.behind||pers.triggers.passed||"determined";mod=1.01}
-    else if(sim.time>sim.track.distance/20){targetMood=pers.triggers.final||pers.base;mod=1.02}
+    if(rank===1){targetMood=pers.triggers.lead||pers.base;mod=1.0}   // v2: no speed bonus for leading (v1 gave +1.5%, which locked in the early leader)
+    else if(rank>=6){targetMood=pers.triggers.behind||pers.triggers.passed||"determined";mod=1.004}
+    else if(sim.time>sim.track.distance/20){targetMood=pers.triggers.final||pers.base;mod=1.006}   // v2: mild (v1 1.02 / 1.01 reeled the leader in by a fixed amount every race)
     if(sim.activeEvents.some(e=>e.type==="obstacle"||e.type==="distraction")){
       if(r.rider.nerve<7) targetMood=pers.triggers.scare||pers.triggers.eventScare||"startled";
       else targetMood=pers.triggers.event||targetMood;
