@@ -81,8 +81,9 @@ const dogArt = id => (ART.dogs && ART.dogs[id]) || {};
    so there are no missing-file errors; a dog with no art falls through to
    the vector gallop placeholder (render.js / gait.js).
      Penny also has the cut-out gallop rig (js/rigs.js), which SIDE prefers.
-     Ghostbuster: the pack's stand.png is corrupt (a green glyph, not a dog),
-     and no other Ghostbuster sprite exists → placeholder. */
+     Ghostbuster: the first pack's stand.png was corrupt (a green glyph). Since
+     super-v4 he has a cut-out gallop rig like Penny (js/rigs.js RIG_GHOSTBUSTER),
+     cut from the Sep 3 standing-pack stand.png (sha256 51a7a0ad…c673). */
 const DOG_SIDE_ART = {
   meatball:"assets/dogs/meatball/side.webp", beaux:"assets/dogs/beaux/side.webp",
   kira:"assets/dogs/kira/side.webp", penny:"assets/dogs/penny/side.webp",

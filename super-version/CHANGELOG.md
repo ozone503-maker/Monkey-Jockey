@@ -1,3 +1,30 @@
+# SUPER v4 (Oct 2 2026): Ghostbuster's real SIDE gallop art
+
+Jessie OK'd building Ghostbuster's SIDE art from the Sep 3 standing pack, with no image generation. The source is `standing/dogs/ghostbuster/stand.png` (1400x720 RGBA, faces right, white with black spots and black ears, sha256 `51a7a0ad416c4c3aa3f8d791582814521e6b9d4dd6c33290a0afdfd72344c673`). This is a different file from the corrupt 126 KB one in the first standing zip.
+
+## How the other dogs run, and what Ghostbuster now uses
+- **Penny:** a cut-out rig from the recovered Claude gallop prototype (`js/rigs.js` `RIG_PENNY`). Plain rectangle crops of her standing art in 1400x720 source space: body, head, tail, plus hip / knee / paw bands for the rear and the front leg pair. Each has a pivot. `drawRigDog()` drives the bands with `legAngles` (hip 34°, knee 80°, ankle 11°, stance 34% from the footfall bars, front delay 38%), plus bob/pitch/spine/tail spring and the head low (`HEAD_LOW`).
+- **Meatball, Beaux, Kira, Mike, Diva, Noodle:** one baked running-pose sprite each (`assets/dogs/<id>/side.webp`). The leg band is sheared by the same gait (`drawSpriteGallop`).
+- **Ghostbuster's art is a standing pose, like Penny's,** so it gets **Penny's rig format.** `tools/rig_ghostbuster.py` makes rectangle crops only:
+  - Joints at hip 472 / knee 553 / ankle 622.
+  - Rear pivot x 488, front pivot x 806. Ground 683, back 359. These were measured from the alpha profile.
+  - The face and ear are cleared from the body copy so the low-tilted head has no ghost twin.
+  - Parts are in `assets/rigs/ghostbuster/*.webp`, and the rig is `RIG_GHOSTBUSTER` in `js/rigs.js`.
+  - `RIGS.ghostbuster` in `js/gait.js` makes the race SIDE camera and the title parade use it automatically.
+- **Gait and scale are unchanged:**
+  - The locked step rate is ×1.06. The physics notes give leg length 177 → ×1.06, stride ×0.95.
+  - Draw scale is 0.90 (the compact pair with Noodle). Body length is normalised like Penny (`dogH*1.55/(front-back)`). He faces right like everyone else.
+- **FRONT camera:** unchanged (drawn front placeholders for all dogs). Checked: 0 errors.
+
+## Previews (`tools/gallop_preview.py`)
+- `test-screens/v4/ghostbuster-gallop-strip.png`: 4 gait phases, Ghostbuster rig vs Penny rig.
+- `test-screens/v4/race-side-phone.png` + `race-ghostbuster-zoom.png`: phone 390x844 SIDE, Ghostbuster + Ipo beside Meatball.
+- `test-screens/v4/race-front-phone.png`: FRONT.
+
+**Verdict:** reads as the same white spotted dog galloping, at a matching scale. The band seams on the legs are visible up close, the same as Penny's rig.
+
+Race engine untouched: `race_sim.js` 3000 races are byte-identical to super-v2/v3.
+
 # SUPER v3 (Oct 2 2026): picker visuals + attribute ratings, moving title, podium stands
 
 Jessie, before merging PR #11: *"the player select screen is missing the visuals of the dog and rider. the attribute ratings are missing. the title screen is supposed to be moving with music. the post race is supposed to have 3 podiums."* The race engine is untouched: `node tools/race_sim.js . 3000` gives output byte-identical to super-v2.

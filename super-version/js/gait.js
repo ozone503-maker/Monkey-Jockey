@@ -86,7 +86,7 @@ function loadRig(rig){
   for(const k in rig.parts){ const p = rig.parts[k]; front = Math.max(front, p.ax - p.px + p.w); }
   return {rig, I, front};
 }
-const RIGS = { penny: loadRig(RIG_PENNY) };
+const RIGS = { penny: loadRig(RIG_PENNY), ghostbuster: loadRig(RIG_GHOSTBUSTER) };
 const MJ_SIDE = { R: RIG_MJ_SIDE, torso: Object.assign(new Image(), {src: RIG_MJ_SIDE.torso.src}),
                   head: Object.assign(new Image(), {src: RIG_MJ_SIDE.head.src}) };
 
