@@ -1,3 +1,12 @@
+# SUPER v5 (Oct 2 2026): YOUR TEAM card in three columns
+
+Jessie's feedback: the rider art overlapped and covered the dog portrait. She asked for "the stats in the middle and the dogs and the riders on each side." The new layout:
+- **Three columns:** dog portrait on the left; stats in the middle (dog name + 4 bars, then rider name + 4 bars); the rider's full-body art on the right.
+- The rider is `object-fit:contain` inside its own column, so nothing can overlap.
+- **Phone:** columns are 23% / 1fr / 25%. Bars, labels and fonts are smaller (8.5 px labels, 6 px pips, 11 px numbers), and long names (more than 14 characters, e.g. Mystery Drone Pilot) drop to 11 px. The card is 210 px tall at 390x844, the same for every pick.
+- **Desktop (≥900 px):** the card is capped at 780 px and centred, with columns 170 px / 1fr / 150 px.
+- **Checked with `tools/card_shots.py`:** 8 dog+rider picks (including Nonna, ShockBot and Mystery Drone Pilot), phone and desktop. Results: no overlap, no clipped names or labels, no sideways scroll, 0 JS errors. Only the picker card's markup (`renderShowcase` in `js/ui.js`) and its CSS changed.
+
 # SUPER v4 (Oct 2 2026): Ghostbuster's real SIDE gallop art
 
 Jessie OK'd building Ghostbuster's SIDE art from the Sep 3 standing pack, with no image generation. The source is `standing/dogs/ghostbuster/stand.png` (1400x720 RGBA, faces right, white with black spots and black ears, sha256 `51a7a0ad416c4c3aa3f8d791582814521e6b9d4dd6c33290a0afdfd72344c673`). This is a different file from the corrupt 126 KB one in the first standing zip.

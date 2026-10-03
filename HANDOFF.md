@@ -1,6 +1,6 @@
 # HANDOFF: Monkey Jockey "super version"
 
-> **On GitHub (branch `super-version`) the playable game is in `super-version/`.** The file paths below are relative to that folder. The repo-root `README.md` is the older ChatGPT master spec from `main`, left unchanged. The local working repo is `/workspace/mj-fix`, tag `super-v4`.
+> **On GitHub (branch `super-version`) the playable game is in `super-version/`.** The file paths below are relative to that folder. The repo-root `README.md` is the older ChatGPT master spec from `main`, left unchanged. The local working repo is `/workspace/mj-fix`, tag `super-v5`.
 
 Written for any AI or developer picking this up cold.
 
@@ -65,6 +65,7 @@ Written for any AI or developer picking this up cold.
   - Mystery Drone Pilot replaces Ruch.
   - Real rider and dog avatars.
   - Victory podium with RUN IT BACK and photo-finish call.
+- **Super v5 (Oct 2):** picker YOUR TEAM card is now three columns (dog | stats | rider), no overlap (`tools/card_shots.py`).
 - **Super v4 (Oct 2):** Ghostbuster SIDE gallop rig cut from the Sep 3 standing pack (`tools/rig_ghostbuster.py`), used in the race and title parade.
 - **Super v3 (Oct 2):** picker YOUR TEAM showcase with dog portrait + full-body rider art and 10-pip attribute ratings (real `js/data.js` numbers), mini ratings on every tile; moving title (team parade, Ken Burns video, logo motion, TAP FOR MUSIC); 3 distinct podium stands (1st centre/tallest) with dog + full-body rider art.
 - **Balance v2 (Oct 2 2026, Jessie's OK):** fair, unpredictable races. 3000-race sim: every dog and rider within x0.88–x1.17 of fair share, no combo above x1.5, early leader at 25% wins 27% (was 72%), 4.8 lead changes per race, Monkey Jockey 13.9% (was 49%). A fresh seed is rolled for every new race; RUN IT BACK replays identically. Details in CHANGELOG.md.

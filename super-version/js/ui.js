@@ -105,13 +105,14 @@ function charTile(kind, x, selected){
 
 function renderShowcase(){
   const d = dogBy[playerPick.dogId], r = riderBy[playerPick.riderId];
+  // super-v5: three columns, nothing overlaps: dog portrait | stats | rider full body
   $('showcase').innerHTML = `<div class="sc-k">YOUR TEAM</div>
-    <div class="sc-art"><img class="sc-dog" src="${faceFor('dogs', d.id)}" alt="${d.name}">
-      <img class="sc-rider" src="${riderFull(r.id)}" alt="${r.name}"></div>
+    <div class="sc-dw"><img class="sc-dog" src="${faceFor('dogs', d.id)}" alt="${d.name}"></div>
     <div class="sc-stats">
-      <div class="sc-col"><h5>${d.name}<small>DOG</small></h5>${ratingBars('dogs', d)}</div>
-      <div class="sc-col"><h5>${r.name}<small>RIDER</small></h5>${ratingBars('riders', r)}</div>
-    </div>`;
+      <div class="sc-col"><h5${d.name.length > 14 ? ' class="long"' : ''}>${d.name}<small>DOG</small></h5>${ratingBars('dogs', d)}</div>
+      <div class="sc-col"><h5${r.name.length > 14 ? ' class="long"' : ''}>${r.name}<small>RIDER</small></h5>${ratingBars('riders', r)}</div>
+    </div>
+    <div class="sc-rw"><img class="sc-rider" src="${riderFull(r.id)}" alt="${r.name}"></div>`;
 }
 
 function renderTeamSelect(){
