@@ -219,3 +219,84 @@ main{display:flex;flex-direction:column}
 @keyframes mjfall{to{transform:translateY(520px) rotate(540deg);opacity:0}}
 @media(prefers-reduced-motion:reduce){.confetti{display:none}}
 @media(max-width:650px){.mute{top:auto;bottom:max(10px,env(safe-area-inset-bottom));right:10px;padding:6px 10px;font-size:10px}}
+
+/* ============================================================
+   super-v3: moving title, picker showcase + attribute ratings, podium stands
+   Palette per design/UI-PALETTE.md: juicy blue #2AA8FF, pink #E0517D,
+   dark blue #102A5C, plum #35163F, basalt #4B5257.
+   ============================================================ */
+.intro video{animation:kb 22s ease-in-out infinite alternate;transform-origin:60% 45%}
+@keyframes kb{from{transform:scale(1.04) translate(0,0)}to{transform:scale(1.16) translate(-3%,-2%)}}
+.intro-parade{position:absolute;left:0;right:0;bottom:0;width:100%;height:34%;pointer-events:none}
+.intro-body{animation:rise .9s cubic-bezier(.2,.9,.3,1.2) both;margin-bottom:22vh}
+@keyframes rise{from{opacity:0;transform:translateY(26px) scale(.92)}to{opacity:1;transform:none}}
+@keyframes bob{0%,100%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-8px) rotate(4deg)}}
+.intro-logo span{animation:glow 3s ease-in-out infinite}
+.intro-logo em{animation:glow 3s ease-in-out .5s infinite}
+@keyframes glow{0%,100%{text-shadow:0 4px 22px #000c}50%{text-shadow:0 4px 22px #000c,0 0 26px #2AA8FFaa}}
+.intro-cta{animation:pulse 1.8s ease-in-out infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 #E0517Dcc}70%,100%{box-shadow:0 0 0 14px #E0517D00}}
+.intro-music{display:block;margin:12px auto 0;min-height:34px;padding:7px 14px;border-radius:999px;
+  background:#102A5Ccc;color:#bfe3ff;border:1px solid #2AA8FF88;font-size:12px;letter-spacing:.12em;
+  animation:blink 1.6s ease-in-out infinite}
+@keyframes blink{50%{opacity:.55}}
+.intro.music-on .intro-music{visibility:hidden}
+@media(prefers-reduced-motion:reduce){.intro video,.intro-body,.intro-logo span,.intro-logo em,.intro-cta,.intro-music{animation:none}}
+
+/* picker: your-team showcase */
+.showcase{position:relative;z-index:1;display:grid;grid-template-columns:minmax(120px,40%) 1fr;gap:10px;align-items:center;
+  background:linear-gradient(150deg,#102A5Cf2,#35163Ff2);border:2px solid #2AA8FF66;border-radius:16px;padding:10px;margin-bottom:12px}
+.sc-k{grid-column:1/-1;font:1000 11px system-ui;letter-spacing:.28em;color:#2AA8FF}
+.sc-art{position:relative;aspect-ratio:1;max-width:190px;width:100%}
+.sc-dog{width:82%;aspect-ratio:1;object-fit:cover;border-radius:14px;border:3px solid #fff;box-shadow:0 6px 16px #0008;background:#cfe6fa}
+.sc-rider{position:absolute;right:-4%;bottom:-6%;height:92%;width:auto;filter:drop-shadow(0 4px 8px #000c)}
+.sc-stats{display:flex;flex-direction:column;gap:8px;min-width:0}
+.sc-col h5{margin:0 0 3px;font-size:14px;color:#fff;display:flex;align-items:baseline;gap:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sc-col h5 small{font-size:9px;letter-spacing:.2em;color:#E0517D}
+.rb{display:grid;grid-template-columns:58px 1fr 16px;align-items:center;gap:5px;font-size:9.5px;line-height:1.5}
+.rb-l{color:#bfd3ea;font-weight:800;letter-spacing:.06em}
+.rb-pips{display:grid;grid-template-columns:repeat(10,1fr);gap:2px}
+.rb-pips i{height:7px;border-radius:2px;background:#ffffff1f}
+.rb-pips i.on{background:linear-gradient(#5cc2ff,#2AA8FF)}
+.sc-col:last-child .rb-pips i.on{background:linear-gradient(#ff7fa3,#E0517D)}
+.rb-v{font:900 11px system-ui;color:#fff;text-align:right}
+/* tiles: mini rating bars under each name */
+.mini{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;width:100%;padding:0 2px}
+.mb{display:flex;flex-direction:column;align-items:center;gap:1px}
+.mb em{font:800 7px system-ui;letter-spacing:-.02em;font-style:normal;color:#ffffff99}
+.mb i{display:block;width:100%;height:16px;border-radius:2px;background:#ffffff18;position:relative;overflow:hidden}
+.mb i::after{content:"";position:absolute;left:0;right:0;bottom:0;height:calc(var(--v)*100%);background:#2AA8FF}
+#riderGrid .mb i::after{background:#E0517D}
+.chartile.selected{border-color:#2AA8FF;background:#14325e;box-shadow:0 0 0 2px #2AA8FF55}
+
+/* podium: three stands */
+.podium{grid-template-columns:1fr 1.12fr 1fr;gap:6px;padding:26px 4px 0;border-radius:16px;overflow:hidden;
+  background:radial-gradient(60% 70% at 50% 30%,#2AA8FF33,#0000 70%),linear-gradient(#102A5C00,#102A5C88)}
+.pod-lights{position:absolute;inset:0;pointer-events:none;background:
+  conic-gradient(from 200deg at 20% -10%,#fff0 0 10deg,#ffffff14 14deg,#fff0 22deg),
+  conic-gradient(from 140deg at 80% -10%,#fff0 0 10deg,#ffffff14 14deg,#fff0 22deg)}
+.pod{position:relative}
+.pod-trophy{font-size:28px;line-height:1;margin-bottom:2px;animation:bob 2.4s ease-in-out infinite;filter:drop-shadow(0 3px 6px #0009)}
+.pod-art{max-width:118px}
+.pod-dog{width:76%;height:auto;aspect-ratio:1;display:block}
+.pod-rider{right:-14%;bottom:-6%;width:auto;height:74%;aspect-ratio:auto;object-fit:contain;border-radius:0;border:0;box-shadow:none;filter:drop-shadow(0 4px 6px #000b)}
+.pod-name{margin-top:10px}
+.pod-stand{width:100%;margin-top:6px}
+.pod-top{height:10px;border-radius:6px 6px 0 0;transform:perspective(60px) rotateX(28deg);transform-origin:bottom}
+.pod-face{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding-top:6px;color:#102A5C;box-shadow:inset 0 -10px 18px #0003}
+.pod-face b{font:1000 30px/1 system-ui}.pod-face small{font:1000 11px system-ui;letter-spacing:.15em}
+.pod-name .pod-time{margin:1px 0 0;font:800 10px ui-monospace,monospace;color:#bfe3ff}
+.p1 .pod-top{background:#fff2c2}.p1 .pod-face{height:118px;background:linear-gradient(#ffe7a0,#f4c542 70%,#d9a521)}
+.p2 .pod-top{background:#ffffff}.p2 .pod-face{height:86px;background:linear-gradient(#f2f5f8,#b9c3cc 70%,#9aa6b0)}
+.p3 .pod-top{background:#ffe1c4}.p3 .pod-face{height:62px;background:linear-gradient(#f3c9a0,#c8834a 70%,#a9672f)}
+.p1 .pod-art{max-width:134px}
+.pod.you .pod-face{outline:3px solid #2AA8FF;outline-offset:-3px}
+.pod-step{display:none}
+@media (min-width:900px){
+  .showcase{grid-template-columns:220px 1fr}
+  .rb{grid-template-columns:72px 1fr 18px;font-size:11px}
+  .rb-pips i{height:9px}
+  .podium{max-width:640px;margin:14px auto 12px}
+  .pod-art{max-width:150px}.p1 .pod-art{max-width:170px}
+  .mini{max-width:120px}
+}

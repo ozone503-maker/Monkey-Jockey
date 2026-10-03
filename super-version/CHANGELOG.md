@@ -1,3 +1,70 @@
+# SUPER v3 (Oct 2 2026): picker visuals + attribute ratings, moving title, podium stands
+
+Jessie, before merging PR #11: *"the player select screen is missing the visuals of the dog and rider. the attribute ratings are missing. the title screen is supposed to be moving with music. the post race is supposed to have 3 podiums."* The race engine is untouched: `node tools/race_sim.js . 3000` gives output byte-identical to super-v2.
+
+## Where each piece was specified (real sources only)
+| Piece | Source | What it says |
+|---|---|---|
+| Picker visuals | Master spec README §4 and §6 (GitHub main `9f99ed0`; local `/workspace/monkey-jockey-audit/raw/README.md`) | "Character selection must use visual portrait cards." "Selected team is visually obvious." No dropdowns. |
+| Picker visuals | Fruity Puppy Master Bible v0.1 §13.4 (Sep 4) | "two rows of four dog face tiles and two rows of four rider face tiles" |
+| Picker visuals | `art/select/README.md` + `portraits.json` (GitHub main `cff91e6`) | Canonical 512² dog portraits on light blue, used directly in the dog tiles |
+| Attribute ratings | Bible §13.4 | "stat lines and tap-to-pick selection" |
+| Attribute ratings | CHANGES.md U5 | "2×4 face tiles … with stat lines" |
+| Attribute ratings | — | **No source gives a display style** (bars vs stars). Only "stat lines". Bars are my choice. Which stats to show comes from the engine (`js/data.js`). |
+| Attribute ratings | 2021 Drive doc "MONKEY JOCKEY 3R…" | "all races decided by RNG and the attributes are just for decoration", which fits balance v2 |
+| Moving title with music | 2021 Drive doc, "Opening screen" | "Scene of monkey on horse riding by so fast monkey can barely hold on. Distant scene of horse track… Logo comes up. Horse track music plays." |
+| Moving title with music | Bible §13.4 | "video intro with audio before ENTER" |
+| Moving title with music | Bible R-017 | Mobile can block autoplay, so there must be a fallback |
+| Moving title with music | Master spec §5 | Present a clear gesture if autoplay is blocked |
+| Moving title with music | V87–V89 notes | ENTER dismisses at once |
+| Moving title with music | — | The later intro (`mj-title-v33.html`, Claude `monkey-jockey-4-audio-intro.zip`) exists only in the ChatGPT Library. It's still unreachable. |
+| 3 podiums | Bible §13.4 | "trophy screen with 1st/2nd/3rd podium" |
+| 3 podiums | Master spec §24 | 1ST/2ND/3RD exactly matching results, canonical art, RUN IT BACK, same visual world |
+| 3 podiums | 2021 doc | "Award screen… ceremony that shows winning horses" |
+| 3 podiums | CHANGES.md A1 rebuild plan | 1st centre and tallest |
+
+Searched with no further detail found:
+- All 9 branches of ozone503-maker/Monkey-Jockey (git grep for ratings/stats/attributes/podium/title).
+- Gmail (Monkey Jockey + stats/attributes/ratings/podium/title/picker: no relevant mail).
+- Google Drive (only the 2021 concept doc).
+- `/workspace/mj-deep-audit`, `/workspace/mj-later-versions`, and the recovered Claude FRONT prototype (8 KB, no picker/stats).
+
+**Note on the live build before v3:** super-v2 *did* already have portrait tiles and a 3-step podium (`test-screens/v3/before/`). But the tiles showed stats only as a hover tooltip, which a phone never shows. There was no big "your team" view. The podium was three small coloured blocks under portraits.
+
+## What changed
+- **Picker** (`js/ui.js`, `index.html`, `styles/main.css`):
+  - New **YOUR TEAM** showcase at the top. It shows the dog's canonical portrait and the rider's **full-body locked Gate 1 FRONT art** (ShockBot = approved v2 art with hat, sunglasses and turquoise necklace; Mystery Drone Pilot = Gate 1 KEEPER).
+  - The showcase has **attribute ratings**: 10-pip bars with the number, read straight from `js/data.js`.
+    - Dog: SPEED / BURST / STAMINA / FOCUS (blue).
+    - Rider: BALANCE / TIMING / NERVE / LUCK (pink).
+  - Every tile also has mini rating bars labelled SP BU ST FO / BA TI NE LU.
+  - The selected tile has a juicy-blue state with `aria-pressed`.
+- **Title** (`js/title.js`, new):
+  - The eight canonical teams gallop across a scrolling road at the bottom of the title. It uses the race's own SIDE gait code, so it's render-only and never touches `sim` or the rng.
+  - The intro video has a slow Ken Burns drift, so it still moves when a phone blocks autoplay.
+  - The logo rises in and glows, and ENTER pulses.
+  - A **🎵 TAP FOR MUSIC** chip appears. A tap anywhere on the title starts the theme loop, which browsers require; the chip then hides.
+  - Reduced-motion users get a still frame.
+  - `js/core.js`: `ctx` is now `let`, so the parade can borrow the SIDE drawing functions on its own canvas.
+- **Podium**:
+  - Three distinct 3-D stands: 1st centre and tallest (gold, 🏆), 2nd left (silver), 3rd right (bronze). The place number is on each stand's face.
+  - Each stand carries the dog portrait plus the rider's full-body art, the names and the finish time.
+  - Spotlights and confetti. YOUR team's stand is outlined. On desktop the podium is capped at 640 px.
+- **Asset warnings fixed:** `penny.png` / `ipo.png` were false positives. `build_dist.py` read example paths in code comments (`js/art.js`, `js/faces.js`). The comments now name real files, and `build_dist` reports `missing []`. All 8 dogs and 8 riders have picker art. All 8 riders have full-body FRONT art.
+
+## Not found / not used
+- `art/brand/monkey-face.png` (GitHub main, the UI-PALETTE title lockup) is **only the top hair tuft**. The rest of the 1254² image is transparent, so it can't be used as the monkey-face logo. **The real monkey-face file is needed from Jessie.**
+- **No source specifies bars vs stars for ratings.**
+- The later intro video/title page is still in the ChatGPT Library only.
+- Ghostbuster still has no SIDE art (the title parade uses the drawn stand-in, as the race does).
+
+## Tests
+- Phone 390x844 + desktop 1366x900, local and live: title, picker, race, podium with 0 JS errors.
+- Local real phone race: 6 leaders, podium = 3 stands, RUN IT BACK identical, FRONT camera OK.
+- Live real phone race (deploy `dpl_ACRNr5AexPChYEmUgLXgxjWtDbDY`): Penny + Nonna won by 0.045 s, 6 different leaders, podium = 3 stands, RUN IT BACK identical = True, JS errors = 0.
+- Engine sim is identical to super-v2 (3000 races).
+- `/.env.local` → 404 on live.
+
 # BALANCE v2 (Oct 2 2026): fair, unpredictable races
 
 Jessie: *"we need the races to be fair, and not predictable. right now whoever takes the lead wins the race and so the whole race is unwatchable."* This is her sign-off to change seeded results, so **seeds no longer reproduce Sep 2 / super-v1 results** (they still reproduce themselves).

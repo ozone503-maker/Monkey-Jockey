@@ -22,10 +22,13 @@
   <video id="introVid" muted playsinline autoplay loop preload="auto"
          src="assets/video/intro-loop.mp4"></video>
   <div class="intro-scrim"></div>
+  <!-- moving title: the eight teams gallop across a scrolling road (js/title.js) -->
+  <canvas id="titleParade" class="intro-parade" aria-hidden="true"></canvas>
   <div class="intro-body">
     <div class="intro-logo"><span>MONKEY</span><em>JOCKEY</em></div>
     <div class="intro-tag">brought to you by the Kudoken</div>
     <button id="enterBtn" class="primary intro-cta">ENTER</button>
+    <button id="musicBtn" class="intro-music" type="button">&#127925; TAP FOR MUSIC</button>
     <div class="intro-sub">Punah&#275;le Sprint &middot; 900 m</div>
   </div>
 </div>
@@ -90,6 +93,8 @@
              src="assets/video/ghostbuster-loop.mp4"></video>
       <div class="reel-fade"></div>
     </div>
+    <!-- your team, big: dog portrait + full-body rider + attribute ratings from js/data.js -->
+    <div class="showcase" id="showcase" aria-live="polite"></div>
     <div class="tsec">
       <h4>Pick your dog</h4>
       <div class="chargrid" id="dogGrid"></div>
@@ -99,7 +104,7 @@
       <div class="chargrid" id="riderGrid"></div>
     </div>
     <div class="tfoot">
-      <div class="yourteam" id="yourTeam">—</div>
+      <div class="yourteam" id="yourTeam">&mdash;</div>
       <button id="goBtn" class="primary">RACE</button>
     </div>
   </div>
@@ -134,6 +139,7 @@
 <script src="js/race.js"></script>
 <script src="js/render.js"></script>
 <script src="js/front.js"></script>
+<script src="js/title.js"></script>
 <script src="js/audio.js"></script>
 <script src="js/ui.js"></script>
 </body>

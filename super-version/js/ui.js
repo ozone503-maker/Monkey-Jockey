@@ -7,14 +7,20 @@
    the margin is tiny, the official order underneath, and RUN IT BACK = the same
    seed + teams + weather again (REPLAY). Reads sim.finishOrder only. */
 const ORD = n => n + ({1:'st',2:'nd',3:'rd'}[n] || 'th');      // places 1-8
+/* super-v3: three distinct podium stands (1st tallest in the centre, 2nd left, 3rd right).
+   Each stand carries the finishing dog's canonical portrait and the rider's full-body
+   locked Gate 1 FRONT art, names, time and the place on the stand's face. */
+const riderFull = id => (typeof RIDER_FRONT_SRC !== 'undefined' && RIDER_FRONT_SRC[id]) || faceFor('riders', id);
 function podiumCard(r, place){
   const you = r.entrantId === PLAYER_ID ? ' you' : '';
   return `<div class="pod p${place}${you}">
+    ${place === 1 ? '<div class="pod-trophy" aria-hidden="true">🏆</div>' : ''}
     <div class="pod-art"><img class="pod-dog" src="${faceFor('dogs', r.dog.id)}" alt="${r.dog.name}">
-      <img class="pod-rider" src="${faceFor('riders', r.rider.id)}" alt="${r.rider.name}"></div>
-    <div class="pod-name"><strong>${r.dog.name}</strong><span>${r.rider.name}${you ? ' ★' : ''}</span></div>
-    <div class="pod-time">${r.finish.toFixed(3)}s</div>
-    <div class="pod-step">${ORD(place).toUpperCase()}</div></div>`;
+      <img class="pod-rider" src="${riderFull(r.rider.id)}" alt="${r.rider.name}"></div>
+    <div class="pod-name"><strong>${r.dog.name}</strong><span>${r.rider.name}${you ? ' ★' : ''}</span>
+      <span class="pod-time">${r.finish.toFixed(3)}s</span></div>
+    <div class="pod-stand"><div class="pod-top"></div>
+      <div class="pod-face"><b>${place}</b><small>${ORD(place).slice(-2).toUpperCase()}</small></div></div></div>`;
 }
 function showResults(){
   Sound.victory();
@@ -29,7 +35,7 @@ function showResults(){
     <div class="vic-head"><div class="vic-k">🏆 WINNER</div>
       <h2>${a.dog.name} + ${a.rider.name}</h2>${photo}
       <div class="vic-you${mine === 1 ? ' won' : ''}">${mine === 1 ? 'YOU WON!' : `You finished ${ORD(mine)}`}</div></div>
-    <div class="podium">${b ? podiumCard(b, 2) : ''}${podiumCard(a, 1)}${c ? podiumCard(c, 3) : ''}</div>
+    <div class="podium"><div class="pod-lights" aria-hidden="true"></div>${b ? podiumCard(b, 2) : ''}${podiumCard(a, 1)}${c ? podiumCard(c, 3) : ''}</div>
     <div class="res-actions"><button type="button" class="primary" data-act="replay">RUN IT BACK</button>
       <button type="button" class="secondary" data-act="team">CHANGE TEAM</button></div>
     <h3 class="off-h">Official Finish</h3><ol>` +
@@ -70,19 +76,42 @@ function freshSeed(){
 }
 function rollSeed(){ if(!seedTyped) $('seed').value = freshSeed(); }
 
-function statLine(kind, x){
-  return kind === 'dogs'
-    ? `SPD ${x.speed} · BRS ${x.burst} · STA ${x.stamina} · FOC ${x.focus}`
-    : `BAL ${x.balance} · TIM ${x.timing} · NRV ${x.nerve} · LCK ${x.luck}`;
+/* Attribute ratings = the real engine numbers from js/data.js (0–10). Bible §13.4 / master
+   spec §6: portrait cards with stat lines, tap to pick, selected team unmistakable. */
+const STATS = {
+  dogs:   [['speed','SPEED','SP'],['burst','BURST','BU'],['stamina','STAMINA','ST'],['focus','FOCUS','FO']],
+  riders: [['balance','BALANCE','BA'],['timing','TIMING','TI'],['nerve','NERVE','NE'],['luck','LUCK','LU']]
+};
+function statLine(kind, x){ return STATS[kind].map(([k,,ab])=>`${ab} ${x[k]}`).join(' · '); }
+function miniBars(kind, x){
+  return `<span class="mini" aria-hidden="true">${STATS[kind].map(([k,,ab])=>
+    `<span class="mb"><em>${ab}</em><i style="--v:${x[k]/10}"></i></span>`).join('')}</span>`;
+}
+function ratingBars(kind, x){
+  return STATS[kind].map(([k,label])=>`<div class="rb"><span class="rb-l">${label}</span>
+      <span class="rb-pips" role="img" aria-label="${label} ${x[k]} of 10">${
+        Array.from({length:10},(_,n)=>`<i class="${n < x[k] ? 'on' : ''}"></i>`).join('')}</span>
+      <b class="rb-v">${x[k]}</b></div>`).join('');
 }
 
 function charTile(kind, x, selected){
   const hasArt = ART.faces && ART.faces[kind] && ART.faces[kind][x.id];
   const todo = kind === 'dogs' && NO_IDENTITY_CANON.has(x.id) && !hasArt ? ' face-todo' : '';
-  return `<button class="chartile${selected?' selected':''}" type="button" data-id="${x.id}">
-      <img class="face${todo}" src="${faceFor(kind,x.id)}" alt="" title="${statLine(kind,x)}">
-      <b>${x.name}</b>
+  return `<button class="chartile${selected?' selected':''}" type="button" data-id="${x.id}" aria-pressed="${selected}" title="${statLine(kind,x)}">
+      <img class="face${todo}" src="${faceFor(kind,x.id)}" alt="">
+      <b>${x.name}</b>${miniBars(kind,x)}
     </button>`;
+}
+
+function renderShowcase(){
+  const d = dogBy[playerPick.dogId], r = riderBy[playerPick.riderId];
+  $('showcase').innerHTML = `<div class="sc-k">YOUR TEAM</div>
+    <div class="sc-art"><img class="sc-dog" src="${faceFor('dogs', d.id)}" alt="${d.name}">
+      <img class="sc-rider" src="${riderFull(r.id)}" alt="${r.name}"></div>
+    <div class="sc-stats">
+      <div class="sc-col"><h5>${d.name}<small>DOG</small></h5>${ratingBars('dogs', d)}</div>
+      <div class="sc-col"><h5>${r.name}<small>RIDER</small></h5>${ratingBars('riders', r)}</div>
+    </div>`;
 }
 
 function renderTeamSelect(){
@@ -90,6 +119,7 @@ function renderTeamSelect(){
   $('riderGrid').innerHTML = RIDERS.map(r=>charTile('riders',r,r.id===playerPick.riderId)).join('');
   $('yourTeam').textContent =
     `${riderBy[playerPick.riderId].name} on ${dogBy[playerPick.dogId].name}`;
+  renderShowcase();
 }
 
 /* Fisher-Yates against a seeded generator. No Math.random anywhere. */
@@ -173,6 +203,7 @@ function enterGame(){
   const el = $('intro'); if(!el || el.dataset.done) return;
   el.dataset.done = '1';
   el.classList.add('gone');
+  titleStop();
   document.body.classList.remove('intro-open');
   setTimeout(()=>{
     el.hidden = true;
@@ -251,7 +282,7 @@ document.querySelectorAll('.track-card.locked').forEach(card=>{
 Sound.init();
 $('muteBtn').addEventListener('click', ev=>{ ev.stopPropagation(); Sound.setMuted(!Sound.muted); });
 // a tap anywhere on the title (not only ENTER) starts the theme under the intro video
-$('intro').addEventListener('click', ()=>{ if(!$('intro').dataset.done) Sound.playMusic('theme'); });
+$('intro').addEventListener('click', ()=>{ if(!$('intro').dataset.done){ Sound.playMusic('theme'); $('intro').classList.add('music-on'); } });
 
 /* ---------------- boot ---------------- */
 lastWeather = $('weather').value;
@@ -260,6 +291,7 @@ rollSeed();
 document.body.classList.add('intro-open');
 bindTeamSelect();
 renderTeamSelect();
+titleStart();
 raceEntries = buildField(seed($('seed').value));
 sim=makeRace(lastSeed,'punahele',lastWeather,raceEntries);
 draw();

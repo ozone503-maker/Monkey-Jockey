@@ -8,7 +8,7 @@
    ============================================================ */
 const $ = id => document.getElementById(id);
 const canvas = $('race');
-const ctx = canvas.getContext('2d');
+let ctx = canvas.getContext('2d');      // let: the title parade (js/title.js) borrows the SIDE drawing code on its own canvas
 
 let camera = 'side';
 let running = false;

@@ -8,7 +8,7 @@
 
    To replace one, drop a data URI (or any URL) into ART.faces:
        ART.faces.dogs.penny   = "data:image/png;base64,...";
-       ART.faces.riders.ipo   = "assets/faces/ipo.png";
+       ART.faces.riders.ipo   = "assets/faces/riders/ipo.webp";
    The override wins. Nothing else changes.
 
    Identity cues below follow stated canon only. Dogs marked in

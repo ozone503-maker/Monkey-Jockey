@@ -1,6 +1,6 @@
 # HANDOFF: Monkey Jockey "super version"
 
-> **On GitHub (branch `super-version`) the playable game is in `super-version/`.** The file paths below are relative to that folder. The repo-root `README.md` is the older ChatGPT master spec from `main`, left unchanged. The local working repo is `/workspace/mj-fix`, tag `super-v2`.
+> **On GitHub (branch `super-version`) the playable game is in `super-version/`.** The file paths below are relative to that folder. The repo-root `README.md` is the older ChatGPT master spec from `main`, left unchanged. The local working repo is `/workspace/mj-fix`, tag `super-v3`.
 
 Written for any AI or developer picking this up cold.
 
@@ -32,7 +32,8 @@ Written for any AI or developer picking this up cold.
 | `js/gait.js`, `js/rigs.js` | Gallop animation |
 | `js/art.js`, `js/faces.js` | Sprite/portrait lookup (`ART.faces` overrides the SVG fallbacks) |
 | `js/audio.js` | Sound manager and track mapping (`AUDIO_FILES`) |
-| `js/ui.js` | Picker, race start, victory podium, controls, boot |
+| `js/ui.js` | Picker (YOUR TEAM showcase + attribute rating bars), race start, victory podium (3 stands), controls, boot |
+| `js/title.js` | Moving title: the 8 teams gallop across the title on the SIDE gait code (render-only) |
 | `assets/audio/` | theme, menu-loop, race-start, race-loop, victory (mapping in CHANGELOG.md) |
 | `assets/faces/{riders,dogs}/` | Picker/podium avatars; `*-head.webp` are the SIDE heads |
 | `assets/riders/*-front.webp` | FRONT rider art (locked Gate 1 KEEPERs, keyed) |
@@ -64,6 +65,7 @@ Written for any AI or developer picking this up cold.
   - Mystery Drone Pilot replaces Ruch.
   - Real rider and dog avatars.
   - Victory podium with RUN IT BACK and photo-finish call.
+- **Super v3 (Oct 2):** picker YOUR TEAM showcase with dog portrait + full-body rider art and 10-pip attribute ratings (real `js/data.js` numbers), mini ratings on every tile; moving title (team parade, Ken Burns video, logo motion, TAP FOR MUSIC); 3 distinct podium stands (1st centre/tallest) with dog + full-body rider art.
 - **Balance v2 (Oct 2 2026, Jessie's OK):** fair, unpredictable races. 3000-race sim: every dog and rider within x0.88–x1.17 of fair share, no combo above x1.5, early leader at 25% wins 27% (was 72%), 4.8 lead changes per race, Monkey Jockey 13.9% (was 49%). A fresh seed is rolled for every new race; RUN IT BACK replays identically. Details in CHANGELOG.md.
 - **Balance targets to keep:** no entrant above ~x1.5 fair share; leader at 25% wins < 35%, at 50% < 45%; 2+ lead changes per race.
 
@@ -81,8 +83,9 @@ Written for any AI or developer picking this up cold.
    - The later **intro video**; only the Sep 2 `intro-loop.mp4` exists.
    - SIDE art for all riders except Monkey Jockey.
    - Full-body FRONT dog art.
-6. **The rest of `CHANGES.md`:**
-   - Palette/monkey-face title (`art/brand/monkey-face.png`).
+6. **Monkey-face title lockup:** `art/brand/monkey-face.png` on GitHub main is only the hair tuft (rest transparent). Get the real file from Jessie.
+7. **The rest of `CHANGES.md`:**
+   - Palette (plum/dark-blue menus instead of green).
    - 3-win streak → free jar.
    - KDU / MallTickets hook-up.
    - Android lifecycle latch and watchdog (V132/V133).

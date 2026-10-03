@@ -20,7 +20,7 @@ const ART = {
 
   /* Selection-screen portraits. Any entry here overrides the
      generated placeholder in js/faces.js. Data URI or path.
-       faces.dogs.penny  = "assets/faces/penny.png"
+       faces.dogs.penny  = "assets/faces/dogs/penny.webp"
        faces.riders.ipo  = "data:image/png;base64,..."           */
   faces: {
     /* Canonical dog select portraits: GitHub ozone503-maker/Monkey-Jockey main,
