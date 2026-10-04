@@ -4,8 +4,8 @@
 
 /* Victory screen (bible §13.4, master spec §21-25): 1st/2nd/3rd podium with the
    real dog portrait + rider avatar, celebratory header, photo-finish call when
-   the margin is tiny, the official order underneath, and RUN IT BACK = the same
-   seed + teams + weather again (REPLAY). Reads sim.finishOrder only. */
+   the margin is tiny, the official order underneath, WATCH REPLAY (the same seed + teams +
+   weather again, as a replay: js/replay.js) and SHARE CLIP. Reads sim.finishOrder only. */
 const ORD = n => n + ({1:'st',2:'nd',3:'rd'}[n] || 'th');      // places 1-8
 /* super-v3: three distinct podium stands (1st tallest in the centre, 2nd left, 3rd right).
    Each stand carries the finishing dog's canonical portrait and the rider's full-body
@@ -27,7 +27,9 @@ function podiumCard(r, place){
 }
 function showResults(){
   Sound.victory();
-  rollSeed();                                   // next GO = a new race; RUN IT BACK = this one
+  const isReplay = typeof REPLAY !== 'undefined' && REPLAY.on;
+  if(!isReplay) rollSeed();                     // next GO = a new race; a replay never rolls a seed
+  if(typeof noteFinishedRace === 'function') noteFinishedRace();
   const F = sim.finishOrder, [a, b, c] = F;
   const margin = b ? b.finish - a.finish : 0;
   const mine = F.findIndex(r => r.entrantId === PLAYER_ID) + 1;
@@ -35,15 +37,17 @@ function showResults(){
   $('results').style.display='block';
   $('results').innerHTML =
     `<div class="confetti" aria-hidden="true">${'<i></i>'.repeat(18)}</div>
-    <div class="vic-head"><div class="vic-k">🏆 WINNER</div>
+    <div class="vic-head">${isReplay ? '<div class="vic-replay">▶ REPLAY · same race, nothing changes</div>' : ''}<div class="vic-k">🏆 WINNER</div>
       <h2>${a.dog.name} + ${a.rider.name}</h2>${photo}
       <div class="vic-you${mine === 1 ? ' won' : ''}">${mine === 1 ? 'YOU WON!' : `You finished ${ORD(mine)}`}</div></div>
     <div class="podium"><div class="pod-lights" aria-hidden="true"></div>${b ? podiumCard(b, 2) : ''}${podiumCard(a, 1)}${c ? podiumCard(c, 3) : ''}</div>
-    <div class="res-actions"><button type="button" class="primary" data-act="replay">RUN IT BACK</button>
+    <div class="res-actions"><button type="button" class="primary" data-act="watch">▶ WATCH REPLAY</button>
+      <button type="button" class="primary share" data-act="share">SHARE CLIP</button>
       <button type="button" class="secondary" data-act="team">CHANGE TEAM</button></div>
     <h3 class="off-h">Official Finish</h3><ol>` +
     F.map(r => `<li class="${r.entrantId === PLAYER_ID ? 'you' : ''}"><img src="${faceFor('riders', r.rider.id)}" alt=""><strong>${r.dog.name}</strong> + ${r.rider.name} — ${r.finish.toFixed(3)}s</li>`).join('') + '</ol>';
   setTimeout(()=>{ try{ $('results').scrollIntoView({behavior:'smooth', block:'start'}); }catch(e){} }, 400);
+  if(isReplay) endReplayUI();
 }
 
 function dumpSystemLog(){
@@ -167,6 +171,7 @@ function refreshPreview(){
 
 function showTeamSelect(){
   running = false;
+  if(typeof stopReplayMode === 'function') stopReplayMode();
   Sound.stopCues(); Sound.playMusic('menu');
   if(typeof setCamera === 'function' && camera !== 'side') setCamera('side');   // new team → default SIDE view
   cancelAnimationFrame(raf);
@@ -224,6 +229,7 @@ function start(replay=false){
   $('results').style.display='none';
   const s=replay?lastSeed:seed($('seed').value);
   if(!replay) seedTyped=false;                  // a typed seed is used once
+  if(!replay && typeof stopReplayMode==='function') stopReplayMode();   // GO = a real new race, never a replay
   if(replay){
     // reproduce the exact race: restore the entries AND the weather it ran with
     raceEntries=lastEntries.map(e=>({...e}));
@@ -247,7 +253,8 @@ function start(replay=false){
   running=true; lastT=performance.now();
   function loop(t){
     const dt=Math.min(.05,(t-lastT)/1000); lastT=t;
-    if(running){sim.acc+=dt; while(sim.acc>=1/30){step(1/30);sim.acc-=1/30}}
+    // replay (js/replay.js): only the sim-time rate changes (1x / 0.5x / clip cut); steps stay 1/30 s
+    if(running){sim.acc+=dt*(REPLAY.on?replayRate():1); while(running&&sim.acc>=1/30){step(1/30);sim.acc-=1/30}}
     draw();
     if(running)raf=requestAnimationFrame(loop);
   }
@@ -257,10 +264,12 @@ function start(replay=false){
 $('enterBtn').addEventListener('click',enterGame);
 $('goBtn').addEventListener('click',()=>start(false));
 $('teamBtn').addEventListener('click',showTeamSelect);
-$('replayBtn').addEventListener('click',()=>start(true));
+$('replayBtn').addEventListener('click',()=>startReplay());      // RUN IT BACK = watch the same race as a replay
 $('results').addEventListener('click',ev=>{
   const b=ev.target.closest && ev.target.closest('button[data-act]'); if(!b) return;
-  if(b.dataset.act==='replay') start(true); else showTeamSelect();
+  if(b.dataset.act==='watch') startReplay();
+  else if(b.dataset.act==='share') shareClip();
+  else showTeamSelect();
 });
 $('weather').addEventListener('change',refreshPreview);
 /* The OVERHEAD/top-down camera is retired: no button, key or auto-switch

@@ -37,7 +37,7 @@ with sync_playwright() as p:
             podium:document.querySelectorAll('#results .pod').length, nextSeed:document.getElementById('seed').value}; }""")
         fin=pg.evaluate(FIN)
         if k==0:
-            pg.click('#results button[data-act="replay"]'); pg.wait_for_timeout(500); wait_done(pg)
+            pg.click('#results button[data-act="watch"]'); pg.wait_for_timeout(500); wait_done(pg)
             res['runItBackIdentical']= pg.evaluate(FIN)==fin and pg.evaluate("() => sim.seed")==res['seed']
             res['frontCamera']=front
         out.append(res)

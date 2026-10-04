@@ -6,6 +6,21 @@
 <meta name="theme-color" content="#121514">
 <title>Monkey Jockey — Launch Build (Punahēle only)</title>
 <link rel="icon" href="data:,">
+<!-- link previews (Open Graph / Twitter). Static image built from existing art by tools/build_og.py. No analytics, no pixels. -->
+<meta name="description" content="Pick a rescue dog and a rider, race 900 m through the Punahēle rainforest, then share your replay. Can you beat my race?">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Monkey Jockey">
+<meta property="og:title" content="Monkey Jockey: can you beat my race?">
+<meta property="og:description" content="Pick a rescue dog and a rider, race the Punahēle Sprint (900 m), then share your replay.">
+<meta property="og:url" content="https://monkey-jockey-test.vercel.app/">
+<meta property="og:image" content="https://monkey-jockey-test.vercel.app/assets/share/og-card.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Monkey Jockey: Penny the rescue dog galloping with Fonk riding, and the eight dogs of the race">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Monkey Jockey: can you beat my race?">
+<meta name="twitter:description" content="Pick a rescue dog and a rider, race the Punahēle Sprint (900 m), then share your replay.">
+<meta name="twitter:image" content="https://monkey-jockey-test.vercel.app/assets/share/og-card.jpg">
 <link rel="stylesheet" href="styles/main.css">
 </head>
 <body>
@@ -116,6 +131,11 @@
     <div class="badge" id="weatherView">SUNNY DAY</div>
     <div class="badge" id="eventView">NO ACTIVE EVENTS</div>
   </div>
+  <!-- replay controls (js/replay.js): shown only while a replay runs -->
+  <div class="replaybar" id="replayBar" hidden>
+    <span class="rp-tag">▶ REPLAY</span><span class="rp-rec">● REC</span><span class="rp-info" id="replayInfo"></span>
+    <span class="rp-btns"><button type="button" class="secondary" data-sp="1" aria-pressed="true">1×</button><button type="button" class="secondary" data-sp="0.5" aria-pressed="false">0.5×</button><button type="button" class="secondary" id="replaySkip">SKIP ⏭</button></span>
+  </div>
   <div class="stage">
     <canvas id="race" width="1280" height="720"></canvas>
   </div>
@@ -126,6 +146,9 @@
   <p class="note">Punahēle · 900 m · deterministic. Same seed, same team, same race.</p>
 </main>
 </div>
+
+<div id="shareSheet" class="mjsheet" hidden></div>
+<div id="challenge" class="mjsheet" hidden></div>
 
 <!-- Load order matters. Classic scripts, not ES modules, so the
      folder also opens straight from the filesystem. -->
@@ -142,5 +165,7 @@
 <script src="js/title.js"></script>
 <script src="js/audio.js"></script>
 <script src="js/ui.js"></script>
+<script src="js/replay.js"></script>
+<script src="js/postforme.js"></script>
 </body>
 </html>

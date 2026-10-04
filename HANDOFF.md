@@ -1,6 +1,6 @@
 # HANDOFF: Monkey Jockey "super version"
 
-> **On GitHub (branch `super-version`) the playable game is in `super-version/`.** The file paths below are relative to that folder. The repo-root `README.md` is the older ChatGPT master spec from `main`, left unchanged. The local working repo is `/workspace/mj-fix`, tag `super-v7`.
+> **On GitHub (branch `super-version`) the playable game is in `super-version/`.** The file paths below are relative to that folder. The repo-root `README.md` is the older ChatGPT master spec from `main`, left unchanged. The local working repo is `/workspace/mj-fix`, tag `super-v7.1`.
 
 Written for any AI or developer picking this up cold.
 
@@ -15,6 +15,7 @@ Written for any AI or developer picking this up cold.
 - Live URL: https://monkey-jockey-test.vercel.app/
 - Hosting: Vercel project `monkey-jockey-test`, team `team_58sWigSRcWk4dakvfkImg5nY`.
 - Public, no login.
+- Current live build: **super-v7.1** (Replay + Share), Vercel deploy `dpl_Fg3QbB6HoKBg3BAHYrawynBd4AtT`. `/api/pfm/*` are Vercel functions; `POSTFORME_API_KEY` is not set yet, so `/api/pfm/status` returns `{"enabled":false}`.
 
 ## How to run it
 - `python3 -m http.server 8820`, then open http://127.0.0.1:8820/index.html
@@ -73,6 +74,41 @@ Written for any AI or developer picking this up cold.
 - **Super v3 (Oct 2):** picker YOUR TEAM showcase with dog portrait + full-body rider art and 10-pip attribute ratings (real `js/data.js` numbers), mini ratings on every tile; moving title (team parade, Ken Burns video, logo motion, TAP FOR MUSIC); 3 distinct podium stands (1st centre/tallest) with dog + full-body rider art.
 - **Balance v2 (Oct 2 2026, Jessie's OK):** fair, unpredictable races. 3000-race sim: every dog and rider within x0.88–x1.17 of fair share, no combo above x1.5, early leader at 25% wins 27% (was 72%), 4.8 lead changes per race, Monkey Jockey 13.9% (was 49%). A fresh seed is rolled for every new race; RUN IT BACK replays identically. Details in CHANGELOG.md.
 - **Balance targets to keep:** no entrant above ~x1.5 fair share; leader at 25% wins < 35%, at 50% < 45%; 2+ lead changes per race.
+
+## Replay + Share + Post to all (super-v7.1, LIVE since Oct 3 2026; Post to all hidden until the key is set)
+See the top of CHANGELOG.md for the feature list. What you need to know to work on it or ship it:
+
+**Files**
+- `js/replay.js`: replay mode, recorder/compositor, share sheet, challenge links.
+- `js/postforme.js`: Post to all UI.
+- `api/_pfm.js` + `api/pfm/{status,connect,accounts,upload-url,post,post-status}.js`: Vercel Node functions. Files starting with `_` are not deployed as functions.
+- `assets/share/og-card.jpg`.
+
+**Deploying (when approved)**
+- Copy `api/`, as well as `index.html`, `js/`, `styles/` and `assets/share/`, into `/workspace/mj-vercel`.
+- `vercel.json` has `framework:null` / `outputDirectory:"."`. Vercel still builds `/api/*.js` as functions; verify `/api/pfm/status` returns `{"enabled":false}` after the deploy.
+
+**Post for Me setup** (Jessie signs up Oct 4)
+1. Create a **Quickstart** project. It uses Post for Me's own platform credentials, so there is no app review, but players see "Post for Me" on the sign-in screens.
+2. In the dashboard, set the project **redirect URL** to `https://monkey-jockey-test.vercel.app/?pfm=connected`. Quickstart projects can't pass `redirect_url_override`.
+3. Enable the platforms: TikTok, Instagram, YouTube, X, Facebook, Threads.
+4. Set the Vercel env var `POSTFORME_API_KEY` (Production), then redeploy.
+   - Optional: `ALLOWED_ORIGINS` (comma-separated; the default is the production domain + preview + localhost).
+   - Optional, White Label projects only: `POSTFORME_REDIRECT_URL`.
+   - Tests only: `POSTFORME_API_BASE`, `POSTFORME_MEDIA_HOST`.
+5. The client only probes `/api/pfm/status` on `*.vercel.app` (or with `?pfmdev=1`). **Add a custom domain to that check in `js/postforme.js` if one is added.**
+
+**Known limits from their docs and TikTok's rules**
+- **TikTok:** TikTok's Direct Post rules require `creator_info` (nickname, allowed privacy options, max duration, can-post-now). Post for Me's API does not expose it.
+  - The confirm screen uses the connected @username and Post for Me's two privacy values (Everyone / Only me).
+  - It also offers "Send to my TikTok drafts instead".
+  - If the posting app is unaudited, TikTok makes every post private (SELF_ONLY), with a cap of 5 posting users per day. Ask Post for Me whether their Quickstart TikTok app is audited for Direct Post.
+- **Facebook** posts to Pages only, not personal profiles.
+- **Instagram** needs a Business or Creator account.
+- **Rate limit:** 40 requests/min per project (5/s). One Post to all costs about 5–7 API calls, so only a few players per minute can post. Ask Post for Me for a raise before any promotion.
+- **Quota:** the $10 plan allows 1,000 successful posts/month, and each account posted to counts (assumed).
+- **WebM:** Chromium and Safari record MP4. Firefox records WebM, which Instagram and X may reject unless Post for Me converts it (their docs only promise "processing to meet platform requirements").
+- **Security:** the player id is the only key to a player's connected accounts. It is 128-bit random and lives only in that browser. Functions check origin, id format and account ownership, and only accept media on `data.postforme.dev`. Social-account tokens are stripped from every response.
 
 ## Left to do (priority order)
 1. **Background plants and layered scenery** per `design/SIDE-CAMERA-SCENERY.md` (GitHub main):

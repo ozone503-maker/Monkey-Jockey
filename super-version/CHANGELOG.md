@@ -1,3 +1,34 @@
+# SUPER v7.1 (Oct 3 2026, LIVE): Watch Replay, Share clip, Post to all (hidden until the Post for Me key is set)
+
+Jessie approved: "Yes, put Replay and Share live on the test site." Deployed to Vercel monkey-jockey-test as `dpl_Fg3QbB6HoKBg3BAHYrawynBd4AtT`. Live check at 390×844: Watch Replay and Share Clip work, an MP4 clip was recorded, 0 JS errors, `/api/pfm/status` = `{"enabled":false}`, and Post to all is hidden.
+
+Jessie asked: "We need a replay. Then the user should be able to share his/her replay on their social media sites to get other people to play."
+
+**WATCH REPLAY** (`js/replay.js`, plus small hooks in `js/ui.js`)
+- Re-runs the finished race from `lastSeed` + `lastEntries` + `lastWeather`. The race is deterministic, so the finish order and times are identical (tested).
+- **Speed:** 1× / 0.5×, plus SKIP. A photo finish (margin < 0.05 s) slows to 0.5× automatically.
+- **A replay counts for nothing.** It never rolls a new seed, and it restores the seed box so the next GO is a new race. Team, weather and entries are untouched. Results show a "▶ REPLAY · same race, nothing changes" tag.
+- This build has **no Kudoken wallet, payouts or bets**, so there is nothing else for a replay to change.
+- The RUN IT BACK button in the top bar now plays the replay. GO always starts a real new race.
+
+**SHARE CLIP**
+- **Recording:** canvas `captureStream(30)` + `MediaRecorder`. The race canvas is copied every frame onto a 720×1280 vertical compositor that adds a header, live top-4 standings and the URL.
+- **Clip:** 3 s of the start → cut to the final stretch → 0.5× photo finish → 3.5 s end card. About 19 s, no audio.
+- **End card:** the MONKEY JOCKEY title, "X & Y won!", the podium faces and monkey-jockey-test.vercel.app.
+- **Format:** MP4 (avc1) where supported (Safari/iOS, current Chromium), otherwise WebM (vp9/vp8). `?recfmt=webm` forces WebM.
+- **Share sheet:** `navigator.share({files, text, url})` when the browser can share files. Otherwise: SAVE VIDEO, SHARE LINK (if `navigator.share` exists), X / Facebook / WhatsApp intent links, and COPY LINK. A note explains that Instagram and TikTok have no web share link: save the video, then post it from the app.
+- **Challenge link:** `?race=SEED&dog=ID&rider=ID&w=WEATHER`. The team and weather are needed to reproduce the race. On ENTER a "CHALLENGE · Race #N" card offers WATCH THEIR RACE (a replay; then GO races that seed with your own team) or RACE THIS SEED.
+- **Link previews:** Open Graph and Twitter meta tags. The image `assets/share/og-card.jpg` (1200×630) is built by `tools/build_og_card.py` from a real game race frame plus the picker portraits. No image generation.
+
+**POST TO ALL** via Post for Me (`api/pfm/*.js` Vercel functions + `js/postforme.js`)
+- Hidden until `POSTFORME_API_KEY` is set on Vercel. The key is server-side only.
+- Player identity is a random local id in localStorage (only created when the player opens Post to all). No accounts, no cookies, no analytics.
+- **First time:** Connect accounts, with each platform's sign-in in a new tab so the recorded clip survives. **After that:** caption + POST TO ALL.
+- **TikTok** gets its own confirm screen that follows TikTok's Content Sharing Guidelines, and a clean copy of the clip with no logo or URL.
+- Tested against a local mock: `tools/pfm_mock.js` + `tools/pfm_dev_server.js` + `tools/pfm_flow_test.py`.
+
+**Checks:** the 3000-race sim is byte-identical. 0 JS errors at 390×844. Tests: `tools/replay_share_test.py`, `tools/pfm_flow_test.py`.
+
 # SUPER v7 (Oct 3 2026): Penny's realistic gallop
 
 Jessie approved the realistic Penny sample ("Penny looks right, make 2-3 more frames so her gallop is real").
