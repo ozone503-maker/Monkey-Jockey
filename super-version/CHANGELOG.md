@@ -1,3 +1,13 @@
+# SUPER v7 (Oct 3 2026): Penny's realistic gallop
+
+Jessie approved the realistic Penny sample ("Penny looks right, make 2-3 more frames so her gallop is real").
+- **Art:** four Canva generations in the Fonk/MJ glossy 3D style, all from her current art and then from the approved stretched frame: hind-landing (H), stretched (E, the approved sample), front-landing (F), gathered (G). Sources and BiRefNet mattes are in `art-src/penny/`.
+- **Registration** (`tools/penny_cycle_art.py`): scale from the eye-to-nose distance (all within 3%). Each frame is moved so its seat point (the back surface 276 px behind the collar centre) is shared, on one 932x380 canvas. The planted paws of H and F meet the road line (H is dropped 26 px). Output: `assets/dogs/penny/gallop-{h,e,f,g}.webp`.
+- **Runtime** (`DOG_CYCLE` + `drawDogCycle` in `js/gait.js`; used by `js/render.js` and `js/title.js`): the frame is picked from the SIDE gait phase in quarters (rear stance starts at 0, so the order is H → E → F → G), at her own step rate (×1.04). No leg shear; a gentle body bob (0.45×). Riders sit at the seat at their v6 scale (×1.28 = the old rig's rider size).
+- **Retired for Penny:** `RIG_PENNY` (still in `js/rigs.js`) and the single-frame `side-real.webp` (fallback only).
+- **Previews:** `tools/dog_cycle_gif.py` (GIF per rider) and `tools/dog_strip.py`.
+- **Checks:** the 3000-race sim is byte-identical. 0 JS errors.
+
 # SUPER v6 (Oct 3 2026): official rider art for Erv, Fonk, Nonna and Monkey Jockey
 
 No image generation was used. Jessie's art is the identity, and no faces were redrawn.

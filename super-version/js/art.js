@@ -86,7 +86,7 @@ const dogArt = id => (ART.dogs && ART.dogs[id]) || {};
      cut from the Sep 3 standing-pack stand.png (sha256 51a7a0ad…c673). */
 const DOG_SIDE_ART = {
   meatball:"assets/dogs/meatball/side.webp", beaux:"assets/dogs/beaux/side.webp",
-  kira:"assets/dogs/kira/side.webp", penny:"assets/dogs/penny/side.webp",
+  kira:"assets/dogs/kira/side.webp", penny:"assets/dogs/penny/side-real.webp"  /* super-v7: fallback only; Penny runs on DOG_CYCLE (js/gait.js) */,
   mike:"assets/dogs/mike/side.webp", diva:"assets/dogs/diva/side.webp",
   noodle:"assets/dogs/noodle/side.webp"
   // ghostbuster: none

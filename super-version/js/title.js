@@ -26,10 +26,13 @@ function titleTeam(k, dogId, riderId, x, ground, s, dt){
   const rig = RIGS[dogId], frame = (DOG_FRAMES[dogId] || [])[0];
   if(rig){
     drawRigDog(rig, x, ground, dogH*1.55/(rig.front - rig.rig.back), P, rider);
+  } else if(dogCycleReady(dogId)){
+    const seat = drawDogCycle(dogId, x, ground, dogH, g.phase, P);
+    drawSideRider(rider, seat[0], seat[1], spriteFit(dogId, {naturalWidth: 2, naturalHeight: 1}, dogH).rs, P);
   } else if(frame && frame.complete && frame.naturalWidth && !frame.isPlaceholder){
-    const h = dogH, w = h*frame.naturalWidth/frame.naturalHeight;
+    const F = spriteFit(dogId, frame, dogH), h = F.h, w = F.w;
     drawSpriteGallop(frame, x, ground, w, h, P);
-    drawSideRider(rider, x - w*0.04, ground - h*0.78 + P.bob*(h/300)*1.6, h/555*0.667, P);
+    drawSideRider(rider, x + w*F.sx, ground - h*F.sy + P.bob*(h/300)*1.6, F.rs, P);
   } else {
     const sc = dogW*0.9/100;
     const seat = drawVectorGallopDog(x, ground - 24*sc, sc, P, SIDE_LOOK[dogId] || SIDE_LOOK.penny);

@@ -75,12 +75,17 @@ function racer(r,x,y,s){
     const S = dogH * 1.55 / (rig.front - rig.rig.back);        // match the sprite dogs' body length
     const seat = drawRigDog(rig, x, ground, S, P, r.rider);
     topY = Math.min(ground - dogH - 44*s, seat[1] - sideRiderRise(r.rider, S*0.667) - 3);
+  } else if(dogCycleReady(r.dog.id)){
+    const RS = spriteFit(r.dog.id, {naturalWidth: 2, naturalHeight: 1}, dogH).rs;
+    const seat = drawDogCycle(r.dog.id, x, ground, dogH, g.phase, P);
+    drawSideRider(r.rider, seat[0], seat[1], RS, P);
+    topY = Math.min(ground - dogH - 44*s, seat[1] - sideRiderRise(r.rider, RS) - 3);
   } else if(frame && frame.complete && frame.naturalWidth && !frame.isPlaceholder){
-    const h = dogH, w = h * frame.naturalWidth / frame.naturalHeight;
+    const F = spriteFit(r.dog.id, frame, dogH), h = F.h, w = F.w;
     drawSpriteGallop(frame, x, ground, w, h, P);
-    const seat = [x - w*0.04, ground - h*0.78 + P.bob*(h/300)*1.6];
-    drawSideRider(r.rider, seat[0], seat[1], h/555*0.667, P);
-    topY = Math.min(ground - h - 44*s, seat[1] - sideRiderRise(r.rider, h/555*0.667) - 3);
+    const seat = [x + w*F.sx, ground - h*F.sy + P.bob*(h/300)*1.6];
+    drawSideRider(r.rider, seat[0], seat[1], F.rs, P);
+    topY = Math.min(ground - dogH - 44*s, seat[1] - sideRiderRise(r.rider, F.rs) - 3);
   } else {
     const sc = dogW*0.9/100;
     const seat = drawVectorGallopDog(x, ground - 24*sc, sc, P, SIDE_LOOK[r.dog.id] || SIDE_LOOK.penny);

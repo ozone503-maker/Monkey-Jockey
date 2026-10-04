@@ -1,6 +1,6 @@
 # HANDOFF: Monkey Jockey "super version"
 
-> **On GitHub (branch `super-version`) the playable game is in `super-version/`.** The file paths below are relative to that folder. The repo-root `README.md` is the older ChatGPT master spec from `main`, left unchanged. The local working repo is `/workspace/mj-fix`, tag `super-v6`.
+> **On GitHub (branch `super-version`) the playable game is in `super-version/`.** The file paths below are relative to that folder. The repo-root `README.md` is the older ChatGPT master spec from `main`, left unchanged. The local working repo is `/workspace/mj-fix`, tag `super-v7`.
 
 Written for any AI or developer picking this up cold.
 
@@ -38,7 +38,7 @@ Written for any AI or developer picking this up cold.
 | `assets/faces/{riders,dogs}/` | Picker/podium avatars; `*-head.webp` are the SIDE heads |
 | `assets/riders/*-front.webp` | FRONT rider art (locked Gate 1 KEEPERs, keyed); still the old art for every rider |
 | `assets/riders/*-side.webp`, `*-full.webp` | Jessie's official SIDE riding art + picker/podium card art (Erv, Fonk, Nonna, Monkey Jockey); `js/gait.js` RIDER_SIDE, `js/ui.js` RIDER_CARD_SRC; built by `tools/build_rider_art_v6.py` / `tools/erv_sample_assets.py` from `art-src/` |
-| `assets/dogs/`, `assets/rigs/` | SIDE dog sprites; Penny + Ghostbuster gallop rigs (cut from standing art), Monkey Jockey side rig |
+| `assets/dogs/`, `assets/rigs/` | SIDE dog sprites; `assets/dogs/<id>/gallop-{h,e,f,g}.webp` = realistic gallop cycle frames (`DOG_CYCLE`); Penny + Ghostbuster gallop rigs (cut from standing art), Monkey Jockey side rig |
 | `assets/video/` | Intro loop (Sep 2) and menu reels |
 
 **Tools:**
@@ -66,6 +66,7 @@ Written for any AI or developer picking this up cold.
   - Mystery Drone Pilot replaces Ruch.
   - Real rider and dog avatars.
   - Victory podium with RUN IT BACK and photo-finish call.
+- **Super v7 (Oct 3):** Penny's realistic SIDE gallop: a 4-frame glossy-3D cycle (hind-landing, stretched, front-landing, gathered; 4 Canva generations), registered at the seat so riders sit steady, cycled by the SIDE gait phase (`DOG_CYCLE` in `js/gait.js`, built by `tools/penny_cycle_art.py`). Her cartoon rig and the leg-band shear are retired for her.
 - **Super v6 (Oct 3):** Jessie's official rider art for Erv, Fonk, Nonna and Monkey Jockey: SIDE riding sprites (near arm + leg only, same seat height), card/podium full bodies, picker tiles. No image generation.
 - **Super v5 (Oct 2):** picker YOUR TEAM card is now three columns (dog | stats | rider), no overlap (`tools/card_shots.py`).
 - **Super v4 (Oct 2):** Ghostbuster SIDE gallop rig cut from the Sep 3 standing pack (`tools/rig_ghostbuster.py`), used in the race and title parade.

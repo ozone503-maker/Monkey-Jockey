@@ -86,7 +86,38 @@ function loadRig(rig){
   for(const k in rig.parts){ const p = rig.parts[k]; front = Math.max(front, p.ax - p.px + p.w); }
   return {rig, I, front};
 }
-const RIGS = { penny: loadRig(RIG_PENNY), ghostbuster: loadRig(RIG_GHOSTBUSTER) };
+const RIGS = { ghostbuster: loadRig(RIG_GHOSTBUSTER) };   // super-v7: Penny runs on her realistic DOG_CYCLE instead of RIG_PENNY (kept in rigs.js)
+/* Sprite fit: height-normalised like before, but a very stretched gallop pose is capped at 2.3× dog height
+   long (then drawn lower; Penny sample 2.91:1 → 2.3 dogH long, 0.79 dogH tall). DOG_SEAT = [x offset × w, seat height × h, rider scale ×] per sprite (default -0.04, 0.78, 1).
+   Penny ×1.28 keeps her riders the exact v6 size they had on her old rig (rig S = dogH·1.55/671 vs sprite dogH/555). */
+const DOG_SEAT = { penny: [0.06, 0.76, 555*1.55/671] };
+function spriteFit(dogId, frame, dogH){
+  const asp = frame.naturalWidth / frame.naturalHeight; let h = dogH, w = h * asp;
+  if(w > 2.3 * dogH){ w = 2.3 * dogH; h = w / asp; }
+  const st = DOG_SEAT[dogId] || [-0.04, 0.78];
+  return {w, h, sx: st[0], sy: st[1], rs: dogH/555*0.667*(st[2] || 1)};
+}
+/* super-v7 realistic gallop CYCLE (Penny, approved by Jessie Oct 3 2026): four registered Canva frames from
+   tools/penny_cycle_art.py, all on one 932x380 canvas with the SEAT (back surface behind the withers) at the same
+   point, so the rider sits steady. Cycle order follows the SIDE gait phase (rear stance starts at phase 0):
+   H hind-landing -> E extended (approved sample) -> F front-landing -> G gathered. The old leg-band shear is not
+   used for her. dy = per-frame drop (canvas px) so the planted paws of H and F both meet the road line. */
+const DOG_CYCLE = {
+  penny: { src: ['h', 'e', 'f', 'g'].map(k => `assets/dogs/penny/gallop-${k}.webp`), w: 932, h: 380,
+           seat: [512.5, 83.7], ground: 376.3, perDogH: 394.57, seatX: 0.138, dy: [26, 0, 0, 0], bob: 0.45,
+           at: [0.00, 0.25, 0.50, 0.75] }
+};
+for(const id in DOG_CYCLE) DOG_CYCLE[id].im = DOG_CYCLE[id].src.map(src => Object.assign(new Image(), {src}));
+function dogCycleReady(id){ const C = DOG_CYCLE[id]; return C && C.im.every(im => im.complete && im.naturalWidth); }
+/* draws the cycle frame for this gait phase; returns the seat point (screen px) */
+function drawDogCycle(id, x, ground, dogH, phase, P){
+  const C = DOG_CYCLE[id], p = frac(phase);
+  let i = 0; for(let j = 0; j < C.at.length; j++) if(p >= C.at[j]) i = j;
+  const z = dogH / C.perDogH, bob = P.bob * C.bob * (dogH / 300) * 1.6;
+  const sx = x + C.seatX * dogH, gy = ground + C.dy[i] * z + bob;
+  ctx.drawImage(C.im[i], sx - C.seat[0] * z, gy - C.ground * z, C.w * z, C.h * z);
+  return [sx, gy - (C.ground - C.seat[1]) * z];
+}
 const MJ_SIDE = { R: RIG_MJ_SIDE, torso: Object.assign(new Image(), {src: RIG_MJ_SIDE.torso.src}),
                   head: Object.assign(new Image(), {src: RIG_MJ_SIDE.head.src}) };
 
