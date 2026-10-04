@@ -1,3 +1,18 @@
+# SUPER v6 (Oct 3 2026): official rider art for Erv, Fonk, Nonna and Monkey Jockey
+
+No image generation was used. Jessie's art is the identity, and no faces were redrawn.
+- **SIDE race riders** (`assets/riders/<id>-side.webp`, `RIDER_SIDE` in `js/gait.js`). They are drawn at the dog's seat, with a little lag sway.
+  - Every rider gets the same seat-to-head-top height (Erv's 503 rig units). The name tag rises above the art.
+  - **Erv:** the approved erv-sample v3. Canva pose from Jessie's Oct 2 reference, with her exact face pasted on. Only the near arm and near leg show.
+  - **Fonk:** Jessie's transparent side crouch, used as-is (edge softened 0.6 px).
+  - **Monkey Jockey:** a BiRefNet matte of the cream-background side crouch. The transparent original had keyed-out holes in the white suit. The far forearm and far boot are erased. This replaces the old torso+head side rig, which stays as a fallback.
+  - **Nonna:** cut off the robot greyhound with a hand-traced polygon (`tools/nonna_side_poly.py`). The far arm and the dog's head and neck are left out, and the near hand is traced clean. The original's keyed-out chrome highlights and white cap were refilled.
+- **Picker card + podium** (`assets/riders/<id>-full.webp`, `RIDER_CARD_SRC` in `js/ui.js`): BiRefNet mattes of the full-body-on-white originals, with edge colours decontaminated (no halo). Monkey Jockey's card art is replaced. Standing art uses the `.tall` podium placement.
+- **Picker tiles** (`assets/faces/riders/<id>.webp`): square head crops of the busts on light blue.
+- **Builders:** `tools/build_rider_art_v6.py` (sources in `art-src/<id>/`) and `tools/erv_sample_assets.py`. Previews are made by `tools/rider_preview.py` and go to `test-screens/v6/`.
+- **Not changed:** FRONT camera art (all 8 riders still use the old Gate 1 FRONT art). ShockBot, Ipo, Dinny and Mystery Drone Pilot keep their old art.
+- **Checks:** the 3000-race sim is byte-identical. Real phone race: 0 JS errors, RUN IT BACK identical, FRONT OK.
+
 # SUPER v5 (Oct 2 2026): YOUR TEAM card in three columns
 
 Jessie's feedback: the rider art overlapped and covered the dog portrait. She asked for "the stats in the middle and the dogs and the riders on each side." The new layout:

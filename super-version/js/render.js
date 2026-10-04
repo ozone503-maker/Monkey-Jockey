@@ -73,14 +73,14 @@ function racer(r,x,y,s){
   const frames = DOG_FRAMES[r.dog.id], frame = frames && frames[0];
   if(rig){
     const S = dogH * 1.55 / (rig.front - rig.rig.back);        // match the sprite dogs' body length
-    drawRigDog(rig, x, ground, S, P, r.rider);
-    topY = ground - dogH - 44*s;
+    const seat = drawRigDog(rig, x, ground, S, P, r.rider);
+    topY = Math.min(ground - dogH - 44*s, seat[1] - sideRiderRise(r.rider, S*0.667) - 3);
   } else if(frame && frame.complete && frame.naturalWidth && !frame.isPlaceholder){
     const h = dogH, w = h * frame.naturalWidth / frame.naturalHeight;
     drawSpriteGallop(frame, x, ground, w, h, P);
     const seat = [x - w*0.04, ground - h*0.78 + P.bob*(h/300)*1.6];
     drawSideRider(r.rider, seat[0], seat[1], h/555*0.667, P);
-    topY = ground - h - 44*s;
+    topY = Math.min(ground - h - 44*s, seat[1] - sideRiderRise(r.rider, h/555*0.667) - 3);
   } else {
     const sc = dogW*0.9/100;
     const seat = drawVectorGallopDog(x, ground - 24*sc, sc, P, SIDE_LOOK[r.dog.id] || SIDE_LOOK.penny);

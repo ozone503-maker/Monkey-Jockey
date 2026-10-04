@@ -10,13 +10,16 @@ const ORD = n => n + ({1:'st',2:'nd',3:'rd'}[n] || 'th');      // places 1-8
 /* super-v3: three distinct podium stands (1st tallest in the centre, 2nd left, 3rd right).
    Each stand carries the finishing dog's canonical portrait and the rider's full-body
    locked Gate 1 FRONT art, names, time and the place on the stand's face. */
-const riderFull = id => (typeof RIDER_FRONT_SRC !== 'undefined' && RIDER_FRONT_SRC[id]) || faceFor('riders', id);
+/* picker/podium full-body art; RIDER_CARD_SRC overrides the FRONT art where a cleaner card image exists */
+const RIDER_CARD_SRC = { erv: 'assets/riders/erv-full.webp', fonk: 'assets/riders/fonk-full.webp',
+  nonna: 'assets/riders/nonna-full.webp', 'monkey-jockey': 'assets/riders/monkey-jockey-full.webp' };
+const riderFull = id => RIDER_CARD_SRC[id] || (typeof RIDER_FRONT_SRC !== 'undefined' && RIDER_FRONT_SRC[id]) || faceFor('riders', id);
 function podiumCard(r, place){
   const you = r.entrantId === PLAYER_ID ? ' you' : '';
   return `<div class="pod p${place}${you}">
     ${place === 1 ? '<div class="pod-trophy" aria-hidden="true">🏆</div>' : ''}
     <div class="pod-art"><img class="pod-dog" src="${faceFor('dogs', r.dog.id)}" alt="${r.dog.name}">
-      <img class="pod-rider" src="${riderFull(r.rider.id)}" alt="${r.rider.name}"></div>
+      <img class="pod-rider${RIDER_CARD_SRC[r.rider.id] ? ' tall' : ''}" src="${riderFull(r.rider.id)}" alt="${r.rider.name}"></div>
     <div class="pod-name"><strong>${r.dog.name}</strong><span>${r.rider.name}${you ? ' ★' : ''}</span>
       <span class="pod-time">${r.finish.toFixed(3)}s</span></div>
     <div class="pod-stand"><div class="pod-top"></div>

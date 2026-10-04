@@ -1,6 +1,6 @@
 # HANDOFF: Monkey Jockey "super version"
 
-> **On GitHub (branch `super-version`) the playable game is in `super-version/`.** The file paths below are relative to that folder. The repo-root `README.md` is the older ChatGPT master spec from `main`, left unchanged. The local working repo is `/workspace/mj-fix`, tag `super-v5`.
+> **On GitHub (branch `super-version`) the playable game is in `super-version/`.** The file paths below are relative to that folder. The repo-root `README.md` is the older ChatGPT master spec from `main`, left unchanged. The local working repo is `/workspace/mj-fix`, tag `super-v6`.
 
 Written for any AI or developer picking this up cold.
 
@@ -36,7 +36,8 @@ Written for any AI or developer picking this up cold.
 | `js/title.js` | Moving title: the 8 teams gallop across the title on the SIDE gait code (render-only) |
 | `assets/audio/` | theme, menu-loop, race-start, race-loop, victory (mapping in CHANGELOG.md) |
 | `assets/faces/{riders,dogs}/` | Picker/podium avatars; `*-head.webp` are the SIDE heads |
-| `assets/riders/*-front.webp` | FRONT rider art (locked Gate 1 KEEPERs, keyed) |
+| `assets/riders/*-front.webp` | FRONT rider art (locked Gate 1 KEEPERs, keyed); still the old art for every rider |
+| `assets/riders/*-side.webp`, `*-full.webp` | Jessie's official SIDE riding art + picker/podium card art (Erv, Fonk, Nonna, Monkey Jockey); `js/gait.js` RIDER_SIDE, `js/ui.js` RIDER_CARD_SRC; built by `tools/build_rider_art_v6.py` / `tools/erv_sample_assets.py` from `art-src/` |
 | `assets/dogs/`, `assets/rigs/` | SIDE dog sprites; Penny + Ghostbuster gallop rigs (cut from standing art), Monkey Jockey side rig |
 | `assets/video/` | Intro loop (Sep 2) and menu reels |
 
@@ -65,6 +66,7 @@ Written for any AI or developer picking this up cold.
   - Mystery Drone Pilot replaces Ruch.
   - Real rider and dog avatars.
   - Victory podium with RUN IT BACK and photo-finish call.
+- **Super v6 (Oct 3):** Jessie's official rider art for Erv, Fonk, Nonna and Monkey Jockey: SIDE riding sprites (near arm + leg only, same seat height), card/podium full bodies, picker tiles. No image generation.
 - **Super v5 (Oct 2):** picker YOUR TEAM card is now three columns (dog | stats | rider), no overlap (`tools/card_shots.py`).
 - **Super v4 (Oct 2):** Ghostbuster SIDE gallop rig cut from the Sep 3 standing pack (`tools/rig_ghostbuster.py`), used in the race and title parade.
 - **Super v3 (Oct 2):** picker YOUR TEAM showcase with dog portrait + full-body rider art and 10-pip attribute ratings (real `js/data.js` numbers), mini ratings on every tile; moving title (team parade, Ken Burns video, logo motion, TAP FOR MUSIC); 3 distinct podium stands (1st centre/tallest) with dog + full-body rider art.
@@ -82,7 +84,8 @@ Written for any AI or developer picking this up cold.
 3. **Rain visuals** when the weather is rainy: streaks, wet sheen, light spray. Today it's only a badge.
 4. **Missing assets:**
    - The later **intro video**; only the Sep 2 `intro-loop.mp4` exists.
-   - SIDE art for all riders except Monkey Jockey.
+   - Official rider art (SIDE + card + tile) for ShockBot, Ipo, Dinny and Mystery Drone Pilot; they still use the drawn SIDE jockey + old FRONT art. Dinny and MDP drafts are pending Jessie's approval.
+   - New FRONT riding art for all 8 riders (FRONT camera still shows the old Gate 1 art; Erv's is the retired green Thorny Toad look).
    - Full-body FRONT dog art.
 5. **Monkey-face title lockup:** `art/brand/monkey-face.png` on GitHub main is only the hair tuft (rest transparent). Get the real file from Jessie.
 6. **The rest of `CHANGES.md`:**

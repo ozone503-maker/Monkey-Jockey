@@ -295,6 +295,9 @@ main{display:flex;flex-direction:column}
 .p2 .pod-top{background:#ffffff}.p2 .pod-face{height:86px;background:linear-gradient(#f2f5f8,#b9c3cc 70%,#9aa6b0)}
 .p3 .pod-top{background:#ffe1c4}.p3 .pod-face{height:62px;background:linear-gradient(#f3c9a0,#c8834a 70%,#a9672f)}
 .p1 .pod-art{max-width:134px}
+/* standing full-body card art (Erv sample): tuck it in so it stays over its own stand */
+.pod-rider.tall{right:-7%;bottom:-4%;height:88%}
+.p1{z-index:2}
 .pod.you .pod-face{outline:3px solid #2AA8FF;outline-offset:-3px}
 .pod-step{display:none}
 @media (min-width:900px){

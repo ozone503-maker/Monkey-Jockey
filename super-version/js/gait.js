@@ -134,9 +134,28 @@ function drawRigDog(R, x, y, S, P, rider, riderScaleMul){
 /* SIDE rider at a seat point. Monkey Jockey uses the prototype's side rig
    (torso + head, lag + head level). Every other rider has no SIDE art:
    drawn crouched jockey + head (ShockBot drawn head, else picker portrait). */
+/* Real SIDE riding art (sample: Erv, Oct 2 2026). seat = the point (image px) that sits on the
+   dog's back; k = image px → rig units, sized by eye to sit like Monkey Jockey on the SIDE rigs (k 1.32). */
+const RIDER_SIDE = {
+  erv: {src: 'assets/riders/erv-side.webp', w: 394, h: 570, seat: [98.2, 381.0], k: 1.32},
+  // super-v6: Jessie's official art (Oct 3 2026); k gives every rider the same seat-to-head-top as Erv
+  fonk: {src: 'assets/riders/fonk-side.webp', w: 374, h: 600, seat: [110.0, 459.3], k: 1.095},
+  'monkey-jockey': {src: 'assets/riders/monkey-jockey-side.webp', w: 399, h: 600, seat: [183.7, 430.8], k: 1.167},
+  nonna: {src: 'assets/riders/nonna-side.webp', w: 345, h: 600, seat: [92.3, 421.5], k: 1.193}
+};
+/* how far above the seat the real SIDE rider art reaches (0 if none) — keeps name tags off his head */
+function sideRiderRise(rider, RS){ const a = rider && RIDER_SIDE[rider.id]; return a && a.im.complete && a.im.naturalWidth ? a.seat[1]*RS*a.k : 0; }
+for(const id in RIDER_SIDE) RIDER_SIDE[id].im = Object.assign(new Image(), {src: RIDER_SIDE[id].src});
 function drawSideRider(rider, sx, sy, RS, P){
   const ok = im => im && im.complete && im.naturalWidth;
   if(!rider) return;
+  const RSa = RIDER_SIDE[rider.id];
+  if(RSa && ok(RSa.im)){
+    const z = RS * RSa.k;
+    ctx.save(); ctx.translate(sx, sy); ctx.rotate(P.lag * 1.2);
+    ctx.drawImage(RSa.im, -RSa.seat[0]*z, -RSa.seat[1]*z, RSa.w*z, RSa.h*z);
+    ctx.restore(); return;
+  }
   if(rider.id === 'monkey-jockey' && ok(MJ_SIDE.torso)){
     const R = MJ_SIDE.R;
     ctx.save(); ctx.translate(sx, sy); ctx.rotate(P.lag*1.6 + 0.36);
